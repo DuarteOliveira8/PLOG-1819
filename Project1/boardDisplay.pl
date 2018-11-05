@@ -7,16 +7,13 @@ board_display([L1 | L], Player) :-
   board_display([L1 | L], Player, 1).
 
 board_display([], Player, 11) :-
-  write('-----------------------------------------'),
-  nl,
-  write('  1   2   3   4   5   6   7   8   9   10'),
-  nl,
+  write('-----------------------------------------\n'),
+  write('  1   2   3   4   5   6   7   8   9   10\n'),
   write(Player),
-  write(' turn').
+  write(' turn\n').
 
 board_display([L1 | L], Player, NLine) :-
-  write('-----------------------------------------'),
-  nl,
+  write('-----------------------------------------\n'),
   line_display(L1),
   write(' '),
   write(NLine),
