@@ -16,7 +16,8 @@ displayMenu :-
   write('Choose wisely the mode you would like to play: ').
 
 manageOptions(1) :-
-  write('You two have fun!\n').
+  write('You two have fun!\n'),
+  initializeGame(p1, p2).
 
 manageOptions(2) :-
   write('Good luck...\n').
