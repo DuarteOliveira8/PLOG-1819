@@ -1,6 +1,8 @@
 menu :-
+  write('\33\[2J'),
   displayMenu,
-  read(Option),
+  get_char(Option),
+  skip_line,
   nl,
   manageOptions(Option).
 
@@ -15,21 +17,29 @@ displayMenu :-
   write('    4) I want to leave this place.\n\n'),
   write('Choose wisely the mode you would like to play: ').
 
-manageOptions(1) :-
+manageOptions('1') :-
+  write('\33\[2J'),
   write('You two have fun!\n'),
-  initializeGame(p1, p2).
+  initializeGame(p1, p2),
+  menu.
 
-manageOptions(2) :-
-  write('Good luck...\n').
+manageOptions('2') :-
+  write('\33\[2J'),
+  write('Good luck...\n'),
+  menu.
 
-manageOptions(3) :-
-  write('This is going to be interesting.\n').
+manageOptions('3') :-
+  write('\33\[2J'),
+  write('This is going to be interesting.\n'),
+  menu.
 
-manageOptions(4) :-
+manageOptions('4') :-
+  write('\33\[2J'),
   write('KBye.\n').
 
 manageOptions(_OTHER) :-
   write('I don\'t know what you just said but try again: '),
-  read(Option),
+  get_char(Option),
+  skip_line,
   nl,
   manageOptions(Option).

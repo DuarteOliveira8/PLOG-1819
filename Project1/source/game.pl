@@ -11,30 +11,41 @@ initializeGame(Yuki, Mina) :-
            [3,3,3,3,3,3,3,3,3,3]],
   board_display(Board, 'Yuki'),
   askYukiInput(YukiX, YukiY, Board),
-  board_display(Board, 'Yuki'),
   gameCycle(Yuki, YukiX, YukiY, Mina, Board).
 
 gameCycle(Yuki, YukiX, YukiY, Mina, Board) :-
   board_display(Board, 'Yuki'),
-  eatTree(YukiX, YukiY),
+  eatTree(YukiX, YukiY, Board),
   askYukiInput(NewYukiX, NewYukiY, Board),
   gameCycle(Yuki, NewYukiX, NewYukiY, Mina, Board).
 
 eatTree(X, Y, Board) :-
-  nth1(Y, Board, SubList),
-  nth1(X, SubList, Position),
-  Position is 0.
+  replaceMultList(0, X, Y, Board, Board).
 
 askYukiInput(X, Y, Board) :-
   write('Type X coordinate: '),
-  read(X),
+  get_char(X),
+  skip_line,
   nl,
   write('Type Y coordinate: '),
-  read(Y),
+  get_char(Y),
+  skip_line,
   nl,
   changeYukiPosition(X, Y, Board).
 
 changeYukiPosition(X, Y, Board) :-
-  nth1(Y, Board, SubList),
-  nth1(X, SubList, Position),
-  Position is 1.
+  write('hello\n').
+
+replaceList(Value, 1, [L1 | L]) :-
+  L1 is Value.
+
+replaceList(Value, X, [L1 | L]) :-
+  NewX is X-1,
+  replaceList(Value, NewX, L).
+
+replaceMultList(Value, X, 1, [B1 | B]) :-
+  replaceList(Value, X, B1).
+
+replaceMultList(Value, X, Y, [B1 | B]) :-
+  NewY is Y-1,
+  replaceMultList(Value, X, NewY, B).
