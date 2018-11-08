@@ -3,5 +3,5 @@
 :-consult('game.pl').
 :- use_module(library(lists)).
 
-frozenForest :-
+ff :-
   menu.
