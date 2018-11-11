@@ -19,7 +19,7 @@ displayMenu :-
 manageOptions(1) :-
   write('\33\[2J'),
   write('You two have fun!\n'),
-  initializeGame(p1, p2),
+  initializeGame,
   menu.
 
 manageOptions(2) :-

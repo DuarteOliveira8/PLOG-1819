@@ -1,5 +1,6 @@
 numToChar(1, C):-C='Y'.
 numToChar(2, C):-C='M'.
+numToChar(5, C):-C='M'.
 numToChar(0, C):-C='O'.
 numToChar(3, C):-C='+'.
 

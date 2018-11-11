@@ -1,4 +1,4 @@
-initializeGame(Yuki, Mina) :-
+initializeGame :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -10,33 +10,60 @@ initializeGame(Yuki, Mina) :-
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3]],
   board_display(Board, 'Yuki'),
-  askYukiInput(YukiX, YukiY, Board, YukiBoard),
-  write('\33\[2J'),
-  board_display(YukiBoard, 'Mina'),
-  askMinaInput(MinaX, MinaY, YukiBoard, MinaBoard),
-  write('\33\[2J'),
-  gameCycle(Yuki, YukiX, YukiY, Mina, MinaX, MinaY, MinaBoard).
-
-gameCycle(Yuki, YukiX, YukiY, Mina, MinaX, MinaY, Board) :-
-  board_display(Board, 'Yuki'),
+  inputPosition(YukiX, YukiY),
   eatTree(YukiX, YukiY, Board, NoTreeBoard),
-  askYukiInput(NewYukiX, NewYukiY, NoTreeBoard, YukiBoard),
+  addPlayerPosition(1, YukiX, YukiY, NoTreeBoard, YukiBoard),
+  write('\33\[2J'),
   board_display(YukiBoard, 'Mina'),
-  askMinaInput(NewMinaX, NewMinaY, YukiBoard, MinaBoard),
-  gameCycle(Yuki, NewYukiX, NewYukiY, Mina, NewMinaX, NewMinaY, MinaBoard).
+  inputPosition(MinaX, MinaY),
+  addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
+  write('\33\[2J'),
+  gameCycle(YukiX, YukiY, MinaX, MinaY, MinaBoard).
+
+gameCycle(YukiX, YukiY, MinaX, MinaY, Board) :-
+  yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, YukiBoard),
+  minaPlay(MinaX, MinaY, NewMinaX, NewMinaY, NewYukiX, NewYukiY, YukiBoard, MinaBoard),
+  gameCycle(NewYukiX, NewYukiY, NewMinaX, NewMinaY, MinaBoard).
+
+yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, NewBoard) :-
+  write('\33\[2J'),
+  board_display(Board, 'Yuki'),
+  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
+  askPlayerPosition(y, YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board),
+  eatTree(NewYukiX, NewYukiY, NoYukiBoard, NoTreeBoard),
+  addPlayerPosition(1, NewYukiX, NewYukiY, NoTreeBoard, NewBoard).
 
 eatTree(X, Y, Board, NBoard) :-
-  replaceMultList(0, X, Y, Board, NBoard).
+  addToMultListCell(-3, X, Y, Board, NBoard).
 
-askYukiInput(X, Y, Board, NBoard) :-
-  askPosition(X, Y),
-  changePlayerPosition(1, X, Y, Board, NBoard).
+minaPlay(MinaX, MinaY, NewMinaX, NewMinaY, YukiX, YukiY, Board, NewBoard) :-
+  write('\33\[2J'),
+  board_display(Board, 'Mina'),
+  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
+  askPlayerPosition(m, MinaX, MinaY, NewMinaX, NewMinaY, YukiX, YukiY, Board),
+  addPlayerPosition(2, NewMinaX, NewMinaY, NoMinaBoard, NewBoard).
 
-askMinaInput(X, Y, Board, NBoard) :-
-  askPosition(X, Y),
-  changePlayerPosition(2, X, Y, Board, NBoard).
+askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board) :-
+  inputPosition(NewX2, NewY2),
+  (Player = y ->
+    (checkValidYukiInput(X, Y, NewX2, NewY2, OponentX, OponentY, Board) ->
+      NewX is NewX2,
+      NewY is NewY2
+    ;
+      write('Invalid move!\n'),
+      askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board)
+    )
+  ;
+    (checkValidMinaInput(X, Y, NewX2, NewY2, OponentX, OponentY, Board) ->
+      NewX is NewX2,
+      NewY is NewY2
+    ;
+      write('Invalid move!\n'),
+      askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board)
+    )
+  ).
 
-askPosition(X, Y) :-
+inputPosition(X, Y) :-
   write('Type X coordinate: '),
   read(X),
   nl,
@@ -44,20 +71,8 @@ askPosition(X, Y) :-
   read(Y),
   nl.
 
-changePlayerPosition(Player, X, Y, Board, NBoard) :-
-  replaceMultList(Player, X, Y, Board, NBoard).
+removePlayerPosition(Player, X, Y, Board, NBoard) :-
+  addToMultListCell(-Player, X, Y, Board, NBoard).
 
-replaceList(Value, 1, [_L1 | L], [Value | L]).
-
-replaceList(Value, X, [L1 | L], [L1 | NB]) :-
-  X > 1,
-  NewX is X-1,
-  replaceList(Value, NewX, L, NB).
-
-replaceMultList(Value, X, 1, [B1 | B], [NB | B]) :-
-  replaceList(Value, X, B1, NB).
-
-replaceMultList(Value, X, Y, [B1 | B], [B1 | NB]) :-
-  Y > 1,
-  NewY is Y-1,
-  replaceMultList(Value, X, NewY, B, NB).
+addPlayerPosition(Player, X, Y, Board, NBoard) :-
+  addToMultListCell(Player, X, Y, Board, NBoard).
