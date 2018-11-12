@@ -47,3 +47,14 @@ checkValueMultList(Value, X, Y, [_B1 | B]) :-
   Y > 1,
   NewY is Y-1,
   checkValueMultList(Value, X, NewY, B).
+
+/* Add all elements of list */
+sumList([Item], Item).
+sumList([Item1,Item2 | Tail], Total) :-
+  sumList([Item1+Item2|Tail], Total).
+
+sumMultList(Sum, Sum, []).
+sumMultList(Sum, Total, [B1 | B]) :-
+  sumList(B1, TotalList),
+  NewSum is Sum+TotalList,
+  sumMultList(NewSum, Total, B).

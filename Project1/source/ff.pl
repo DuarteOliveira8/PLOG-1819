@@ -4,6 +4,7 @@
 :- consult('logic.pl').
 :- consult('ai.pl').
 :- consult('aux.pl').
+:- use_module(library(system)).
 :- use_module(library(lists)).
 
 ff :-
