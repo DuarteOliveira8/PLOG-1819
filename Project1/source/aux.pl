@@ -43,9 +43,9 @@ sumMultList(Sum, Total, [B1 | B]) :-
   NewSum is Sum+TotalList,
   sumMultList(NewSum, Total, B).
 
-/* gets element in list */
+/* gets element in list TODO */
 
-/* updates the game board */
+/* updates the game board TODO */
 setBoard(Game, NewGame, NewBoard) :-
   replaceList(NewBoard, 1, Game, NewGame).
 

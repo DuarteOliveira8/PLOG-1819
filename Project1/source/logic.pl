@@ -1,56 +1,96 @@
-/* use between(low, high, X) */
-checkValidYukiInput(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
-  X > 0,
-  X < 11,
-  Y > 0,
-  Y < 11,
-  X < OldX+2,
-  X > OldX-2,
-  Y < OldY+2,
-  Y > OldY-2,
+checkGameState(Player, ValidPlays, Board) :-
+  \+ checkValidPlays(Player, ValidPlays),
+  \+ checkNumTrees(Player, Board).
+
+checkValidPlays(Player, ValidPlays) :-
+  length(ValidPlays, 0),
+  write('Game Over: '),
+  write(Player),
+  write(' wins!\n').
+
+checkNumTrees(Player, Board) :-
+  sumMultList(0, 93, Board),
+  write('Game Over: '),
+  write(Player),
+  write(' wins!\n').
+
+generateValidYukiPlays(OldX, OldY, MinaX, MinaY, Board, ValidPlays) :-
+  findall([X,Y], checkValidYukiPlay(OldX, OldY, X, Y, MinaX, MinaY, Board), ValidPlays).
+
+generateValidMinaPlays(OldX, OldY, YukiX, YukiY, Board, ValidPlays) :-
+  findall([X,Y], checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board), ValidPlays).
+
+checkValidYukiPlay(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
+  between(1, 10, X),
+  between(1, 10, Y),
   DX is abs(X-OldX),
   DY is abs(Y-OldY),
-  (DX =\= 0, DY =\= 0),
+  between(0, 1, DX),
+  between(0, 1, DY),
+  DXDY is DX + DY,
+  between(1, 2, DXDY),
   \+ checkValueMultList(0, X, Y, Board),
   isVisible(MinaX, MinaY, X, Y, Board).
 
-/* use between(low, high, X) */
-checkValidMinaInput(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
-  X > 0,
-  X < 11,
-  Y > 0,
-  Y < 11,
+/* remove ifs */
+checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
+  between(1, 10, X),
+  between(1, 10, Y),
   DX is abs(X-OldX),
   DY is abs(Y-OldY),
   (DX > 0, DY == 0 ; DX == 0, DY > 0 ; DX == DY, DX =\= 0),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
 
-/* remove ifs */
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
   DX is MinaX-YukiX,
   DY is MinaY-YukiY,
-  (DY == 0 -> (DX < 0 -> RXY is -1; RXY is 1) ; RXY is DX/DY),
-  (DX == 0 -> (DY < 0 -> RYX is -1; RYX is 1) ; RYX is DY/DX),
-  AbsDX is abs(DX),
-  AbsDY is abs(DY),
-  GCD is gcd(AbsDX,AbsDY),
-  (GCD == 1 ->
-    write(visible1),nl,
-    true
-  ;
-    CRXY is ceiling(RXY),
-    CRYX is ceiling(RYX),
-    calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
-    (checkValueMultList(3, NewMinaX, NewMinaY, Board) ->
-      write('not visible'),nl,
-      fail
-    ;checkValueMultList(1, NewMinaX, NewMinaY, Board) ->
-      write(visible2),nl,
-      true
-    ;checkValueMultList(0, NewMinaX, NewMinaY, Board) ->
-      (isVisible(NewMinaX, NewMinaY, YukiX, YukiY, Board) -> true ; fail)
-    )
-  ).
+  calcXYratios(DX, DY, RXY, RYX),
+  GCD is gcd(DX,DY),
+  isDirectlyVisible(GCD, DX, DY, RXY, RYX, MinaX, MinaY, YukiX, YukiY, Board).
+
+calcXYratios(DX, 0, RXY, RYX) :-
+  DX < 0,
+  RXY is -1,
+  RYX is 0.
+
+calcXYratios(DX, 0, RXY, RYX) :-
+  DX > 0,
+  RXY is 1,
+  RYX is 0.
+
+calcXYratios(0, DY, RXY, RYX) :-
+  DY < 0,
+  RXY is 0,
+  RYX is -1.
+
+calcXYratios(0, DY, RXY, RYX) :-
+  DY > 0,
+  RXY is 0,
+  RYX is 1.
+
+calcXYratios(DX, DY, RXY, RYX) :-
+  DX =\= 0,
+  DY =\= 0,
+  RXY is DX/DY,
+  RYX is DY/DX.
+
+isDirectlyVisible(1, _DX, _DY, _RXY, _RYX, _MinaX, _MinaY, _YukiX, _YukiY, _Board).
+
+isDirectlyVisible(GCD, DX, DY, RXY, RYX, MinaX, MinaY, YukiX, YukiY, Board) :-
+  GCD =\= 1,
+  CRXY is ceiling(RXY),
+  CRYX is ceiling(RYX),
+  calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
+  checkValueMultList(Value, NewMinaX, NewMinaY, Board),
+  isUndirectlyVisible(Value, NewMinaX, NewMinaY, YukiX, YukiY, Board).
+
+isUndirectlyVisible(3, _NewMinaX, _NewMinaY, _YukiX, _YukiY, _Board) :-
+  fail.
+
+isUndirectlyVisible(1, _NewMinaX, _NewMinaY, _YukiX, _YukiY, _Board).
+
+isUndirectlyVisible(0, NewMinaX, NewMinaY, YukiX, YukiY, Board) :-
+  isVisible(NewMinaX, NewMinaY, YukiX, YukiY, Board).
 
 calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
   DX < 0, DY < 0,

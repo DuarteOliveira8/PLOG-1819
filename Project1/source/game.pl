@@ -9,7 +9,6 @@ initializeGame :-
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3]],
-  GameState = [Board, YukiX, YukiY, MinaX, MinaY, 0, 0],
   board_display(Board, 'Yuki'),
   inputPosition(YukiX, YukiY),
   eatTree(YukiX, YukiY, Board, NoTreeBoard),
@@ -29,8 +28,11 @@ gameCycle(YukiX, YukiY, MinaX, MinaY, Board) :-
 yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, NewBoard) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
+  generateValidYukiPlays(YukiX, YukiY, MinaX, MinaY, Board, ValidPlays),
+  checkGameState('Yuki', ValidPlays, Board),
+  write(ValidPlays),nl,
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  askPlayerPosition(y, YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board),
+  askPlayerPosition(NewYukiX, NewYukiY, ValidPlays),
   eatTree(NewYukiX, NewYukiY, NoYukiBoard, NoTreeBoard),
   addPlayerPosition(1, NewYukiX, NewYukiY, NoTreeBoard, NewBoard).
 
@@ -40,29 +42,16 @@ eatTree(X, Y, Board, NBoard) :-
 minaPlay(MinaX, MinaY, NewMinaX, NewMinaY, YukiX, YukiY, Board, NewBoard) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
+  generateValidMinaPlays(MinaX, MinaY, YukiX, YukiY, Board, ValidPlays),
+  checkGameState('Mina', ValidPlays, Board),
+  write(ValidPlays),nl,
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
-  askPlayerPosition(m, MinaX, MinaY, NewMinaX, NewMinaY, YukiX, YukiY, Board),
+  askPlayerPosition(NewMinaX, NewMinaY, ValidPlays),
   addPlayerPosition(2, NewMinaX, NewMinaY, NoMinaBoard, NewBoard).
 
-askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board) :-
+askPlayerPosition(NewX, NewY, ValidPlays) :-
   inputPosition(NewX2, NewY2),
-  (Player = y ->
-    (checkValidYukiInput(X, Y, NewX2, NewY2, OponentX, OponentY, Board) ->
-      NewX is NewX2,
-      NewY is NewY2
-    ;
-      write('Invalid move!\n'),
-      askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board)
-    )
-  ;
-    (checkValidMinaInput(X, Y, NewX2, NewY2, OponentX, OponentY, Board) ->
-      NewX is NewX2,
-      NewY is NewY2
-    ;
-      write('Invalid move!\n'),
-      askPlayerPosition(Player, X, Y, NewX, NewY, OponentX, OponentY, Board)
-    )
-  ).
+  checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays).
 
 inputPosition(X, Y) :-
   write('Type X coordinate: '),
@@ -71,6 +60,16 @@ inputPosition(X, Y) :-
   write('Type Y coordinate: '),
   read(Y),
   nl.
+
+checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
+  member([NewX2, NewY2], ValidPlays),
+  NewX is NewX2,
+  NewY is NewY2.
+
+checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
+  \+ member([NewX2, NewY2], ValidPlays),
+  write('Invalid move!\n'),
+  askPlayerPosition(NewX, NewY, ValidPlays).
 
 removePlayerPosition(Player, X, Y, Board, NBoard) :-
   addToMultListCell(-Player, X, Y, Board, NBoard).
