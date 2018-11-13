@@ -7,5 +7,5 @@
 :- use_module(library(system)).
 :- use_module(library(lists)).
 
-ff :-
+play :-
   menu.

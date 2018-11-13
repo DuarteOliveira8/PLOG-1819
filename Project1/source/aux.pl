@@ -32,29 +32,43 @@ replaceMultList(Value, X, Y, [B1 | B], [B1 | NB]) :-
   replaceMultList(Value, X, NewY, B, NB).
 
 /* check if element exists in a list */
-checkValueList(Value, 1, [L1 | _L]) :-
-  Value is L1.
-
-checkValueList(Value, X, [_L1 | L]) :-
-  X > 1,
-  NewX is X-1,
-  checkValueList(Value, NewX, L).
-
-checkValueMultList(Value, X, 1, [B1 | _B]) :-
-  checkValueList(Value, X, B1).
-
-checkValueMultList(Value, X, Y, [_B1 | B]) :-
-  Y > 1,
-  NewY is Y-1,
-  checkValueMultList(Value, X, NewY, B).
+checkValueMultList(Value, X, Y, Board) :-
+  nth1(Y, Board, SubList),
+  nth1(X, SubList, Value).
 
 /* Add all elements of list */
-sumList([Item], Item).
-sumList([Item1,Item2 | Tail], Total) :-
-  sumList([Item1+Item2|Tail], Total).
-
 sumMultList(Sum, Sum, []).
 sumMultList(Sum, Total, [B1 | B]) :-
-  sumList(B1, TotalList),
+  sumlist(B1, TotalList),
   NewSum is Sum+TotalList,
   sumMultList(NewSum, Total, B).
+
+/* gets element in list */
+
+/* updates the game board */
+setBoard(Game, NewGame, NewBoard) :-
+  replaceList(NewBoard, 1, Game, NewGame).
+
+/* updates Yuki X coordinate */
+setYukiX(Game, NewGame, YukiX) :-
+  replaceList(YukiX, 2, Game, NewGame).
+
+/* updates Yuki Y coordinate */
+setYukiY(Game, NewGame, YukiY) :-
+  replaceList(YukiY, 3, Game, NewGame).
+
+/* updates Mina X coordinate */
+setMinaX(Game, NewGame, MinaX) :-
+  replaceList(MinaX, 4, Game, NewGame).
+
+/* updates Mina Y coordinate */
+setMinaY(Game, NewGame, MinaY) :-
+  replaceList(MinaY, 5, Game, NewGame).
+
+/* updates Player 1 points */
+setP1P(Game, NewGame, P1P) :-
+  replaceList(P1P, 6, Game, NewGame).
+
+/* updates Player 2 points */
+setP2P(Game, NewGame, P2P) :-
+  replaceList(P2P, 7, Game, NewGame).

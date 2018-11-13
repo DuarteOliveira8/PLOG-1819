@@ -1,3 +1,4 @@
+/* use between(low, high, X) */
 checkValidYukiInput(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
   X > 0,
   X < 11,
@@ -13,6 +14,7 @@ checkValidYukiInput(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
   \+ checkValueMultList(0, X, Y, Board),
   isVisible(MinaX, MinaY, X, Y, Board).
 
+/* use between(low, high, X) */
 checkValidMinaInput(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
   X > 0,
   X < 11,
@@ -23,6 +25,7 @@ checkValidMinaInput(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
   (DX > 0, DY == 0 ; DX == 0, DY > 0 ; DX == DY, DX =\= 0),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
 
+/* remove ifs */
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
   DX is MinaX-YukiX,
   DY is MinaY-YukiY,
@@ -37,19 +40,7 @@ isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
   ;
     CRXY is ceiling(RXY),
     CRYX is ceiling(RYX),
-    (DX < 0, DY < 0 ->
-      NewMinaX is MinaX+CRXY,
-      NewMinaY is MinaY+CRYX
-    ;DX > 0, DY < 0 ->
-      NewMinaX is MinaX+CRXY,
-      NewMinaY is MinaY-CRYX
-    ;DX < 0, DY > 0 ->
-      NewMinaX is MinaX-CRXY,
-      NewMinaY is MinaY+CRYX
-    ;DX > 0, DY > 0 ->
-      NewMinaX is MinaX-CRXY,
-      NewMinaY is MinaY-CRYX
-    ),
+    calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
     (checkValueMultList(3, NewMinaX, NewMinaY, Board) ->
       write('not visible'),nl,
       fail
@@ -61,22 +52,22 @@ isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
     )
   ).
 
-checkGameState(y, X, Y, MinaX, MinaY, Board) :-
-  sumMultList(0, Total, Board),
-  Total > 93,
-  checkAround(X-1, Y-1, 3, 3, MinaX, MinaY, Board).
+calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+  DX < 0, DY < 0,
+  NewMinaX is MinaX+CRXY,
+  NewMinaY is MinaY+CRYX.
 
-checkAround(_X, _Y, 0, 0, _MinaX, _MinaY, _Board).
+calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+  DX > 0, DY < 0,
+  NewMinaX is MinaX+CRXY,
+  NewMinaY is MinaY-CRYX.
 
-checkAround(X, Y, 0, DY, MinaX, MinaY, Board) :-
-  NewDY is DY-1,
-  NewY is Y+1,
-  NewX is X-2,
-  checkAround(NewX, NewY, 3, NewDY, MinaX, MinaY, Board).
+calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+  DX < 0, DY > 0,
+  NewMinaX is MinaX-CRXY,
+  NewMinaY is MinaY+CRYX.
 
-checkAround(X, Y, DX, DY, MinaX, MinaY, Board) :-
-  checkValueMultList(0, X, Y, Board),
-  \+ isVisible(MinaX, MinaY, X, Y, Board),
-  NewX is X+1,
-  NewDX is DX-1,
-  checkAround(NewX, Y, NewDX, DY, MinaX, MinaY, Board).
+calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+  DX > 0, DY > 0,
+  NewMinaX is MinaX-CRXY,
+  NewMinaY is MinaY-CRYX.
