@@ -57,7 +57,11 @@ manageOptions(4) :-
   write('\33\[2J'),
   write('KBye.\n').
 
-manageOptions(_OTHER) :-
+manageOptions(OTHER) :-
+  OTHER =\= 1,
+  OTHER =\= 2,
+  OTHER =\= 3,
+  OTHER =\= 4,
   write('I don\'t know what you just said but try again: '),
   read(Option),
   nl,

@@ -27,8 +27,9 @@ checkValidYukiPlay(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
   DY is abs(Y-OldY),
   between(0, 1, DX),
   between(0, 1, DY),
-  DXDY is DX + DY,
-  between(1, 2, DXDY),
+  \+ checkValueMultList(1, X, Y, Board),
+  \+ checkValueMultList(2, X, Y, Board),
+  \+ checkValueMultList(5, X, Y, Board),
   \+ checkValueMultList(0, X, Y, Board),
   isVisible(MinaX, MinaY, X, Y, Board).
 
@@ -39,6 +40,9 @@ checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
   DX is abs(X-OldX),
   DY is abs(Y-OldY),
   (DX > 0, DY == 0 ; DX == 0, DY > 0 ; DX == DY, DX =\= 0),
+  \+ checkValueMultList(1, X, Y, Board),
+  \+ checkValueMultList(2, X, Y, Board),
+  \+ checkValueMultList(5, X, Y, Board),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
 
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
@@ -80,7 +84,7 @@ isDirectlyVisible(GCD, DX, DY, RXY, RYX, MinaX, MinaY, YukiX, YukiY, Board) :-
   GCD =\= 1,
   CRXY is ceiling(RXY),
   CRYX is ceiling(RYX),
-  calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
+  calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
   checkValueMultList(Value, NewMinaX, NewMinaY, Board),
   isUndirectlyVisible(Value, NewMinaX, NewMinaY, YukiX, YukiY, Board).
 
@@ -92,22 +96,30 @@ isUndirectlyVisible(1, _NewMinaX, _NewMinaY, _YukiX, _YukiY, _Board).
 isUndirectlyVisible(0, NewMinaX, NewMinaY, YukiX, YukiY, Board) :-
   isVisible(NewMinaX, NewMinaY, YukiX, YukiY, Board).
 
-calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
   DX < 0, DY < 0,
   NewMinaX is MinaX+CRXY,
   NewMinaY is MinaY+CRYX.
 
-calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
   DX > 0, DY < 0,
   NewMinaX is MinaX+CRXY,
   NewMinaY is MinaY-CRYX.
 
-calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
   DX < 0, DY > 0,
   NewMinaX is MinaX-CRXY,
   NewMinaY is MinaY+CRYX.
 
-calcNextMinaX(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
+calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY) :-
   DX > 0, DY > 0,
   NewMinaX is MinaX-CRXY,
   NewMinaY is MinaY-CRYX.
+
+calcNextMinaCoords(DX, _DY, _MinaX, MinaY, _CRXY, CRYX, _NewMinaX, NewMinaY) :-
+  DX == 0,
+  NewMinaY is MinaY-CRYX.
+
+calcNextMinaCoords(_DX, DY, MinaX, _MinaY, CRXY, _CRYX, NewMinaX, _NewMinaY) :-
+  DY == 0,
+  NewMinaX is MinaX-CRXY.
