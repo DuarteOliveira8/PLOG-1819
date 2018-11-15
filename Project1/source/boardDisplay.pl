@@ -11,7 +11,7 @@ board_display([], Player, 11) :-
   write('-----------------------------------------\n'),
   write('  1   2   3   4   5   6   7   8   9   10\n'),
   write(Player),
-  write('\' turn\n').
+  write('\' turn.\n').
 
 board_display([L1 | L], Player, NLine) :-
   write('-----------------------------------------\n'),

@@ -1,4 +1,4 @@
-initializeGame :-
+initializeGame('p', 'p') :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -14,11 +14,15 @@ initializeGame :-
   eatTree(YukiX, YukiY, Board, NoTreeBoard),
   addPlayerPosition(1, YukiX, YukiY, NoTreeBoard, YukiBoard),
   write('\33\[2J'),
-  board_display(YukiBoard, 'Yuki'),
+  board_display(YukiBoard, 'Mina'),
   inputPosition(MinaX, MinaY),
   addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
   write('\33\[2J'),
   gameCycle(YukiX, YukiY, MinaX, MinaY, MinaBoard).
+
+initializeGame('p', 'c').
+
+initializeGame('c', 'c').
 
 gameCycle(YukiX, YukiY, MinaX, MinaY, Board) :-
   yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, YukiBoard),
@@ -29,7 +33,7 @@ yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, NewBoard) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
   generateValidYukiPlays(YukiX, YukiY, MinaX, MinaY, Board, ValidPlays),
-  checkGameState('Mina', ValidPlays, Board),
+  checkGameState('Yuki', ValidPlays, Board),
   write(ValidPlays),nl,
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
   askPlayerPosition(NewYukiX, NewYukiY, ValidPlays),
@@ -53,13 +57,21 @@ askPlayerPosition(NewX, NewY, ValidPlays) :-
   inputPosition(NewX2, NewY2),
   checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays).
 
-inputPosition(X, Y) :-
+inputPosition(ValidX, ValidY) :-
   write('Type X coordinate: '),
   read(X),
   nl,
   write('Type Y coordinate: '),
   read(Y),
-  nl.
+  nl,
+  \+ notValidPosition(X, Y, ValidX, ValidY),
+  ValidX is X,
+  ValidY is Y.
+
+notValidPosition(X, Y, ValidX, ValidY) :-
+  \+ between(1, 10, X),
+  \+ between(1, 10, Y),
+  inputPosition(ValidX, ValidY).
 
 checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
   member([NewX2, NewY2], ValidPlays),

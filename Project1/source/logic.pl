@@ -1,6 +1,10 @@
-checkGameState(Player, ValidPlays, Board) :-
-  \+ checkValidPlays(Player, ValidPlays),
-  \+ checkNumTrees(Player, Board).
+checkGameState('Yuki', ValidPlays, Board) :-
+  \+ checkValidPlays('Mina', ValidPlays),
+  \+ checkNumTrees('Mina', Board).
+
+checkGameState('Mina', ValidPlays, Board) :-
+  \+ checkValidPlays('Yuki', ValidPlays),
+  \+ checkNumTrees('Yuki', Board).
 
 checkValidPlays(Player, ValidPlays) :-
   length(ValidPlays, 0),
@@ -48,8 +52,8 @@ checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
   DX is MinaX-YukiX,
   DY is MinaY-YukiY,
-  calcXYratios(DX, DY, RXY, RYX),
   GCD is gcd(DX,DY),
+  calcXYratios(DX, DY, RXY, RYX),
   isDirectlyVisible(GCD, DX, DY, RXY, RYX, MinaX, MinaY, YukiX, YukiY, Board).
 
 calcXYratios(DX, 0, RXY, RYX) :-

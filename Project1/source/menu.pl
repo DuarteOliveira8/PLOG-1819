@@ -23,7 +23,7 @@ displayMenu :-
   sleep(0.1),
   nl,
   sleep(0.1),
-  write('      2) Get destroyed by the Computer.\n'),
+  write('      2) Get destroyed by Elon Musk\'s AI.\n'),
   sleep(0.1),
   nl,
   sleep(0.1),
@@ -40,17 +40,19 @@ displayMenu :-
 manageOptions(1) :-
   write('\33\[2J'),
   write('You two have fun!\n'),
-  initializeGame,
+  initializeGame('p', 'p'),
   menu.
 
 manageOptions(2) :-
   write('\33\[2J'),
   write('Good luck...\n'),
+  initializeGame('p', 'c'),
   menu.
 
 manageOptions(3) :-
   write('\33\[2J'),
   write('This is going to be interesting.\n'),
+  initializeGame('c', 'c'),
   menu.
 
 manageOptions(4) :-
