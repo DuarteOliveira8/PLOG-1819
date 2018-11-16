@@ -64,13 +64,36 @@ inputPosition(ValidX, ValidY) :-
   write('Type Y coordinate: '),
   read(Y),
   nl,
-  \+ notValidPosition(X, Y, ValidX, ValidY),
+  validPosition(X, Y, ValidX, ValidY).
+
+validPosition(X, Y, ValidX, ValidY) :-
+  number(X),
+  number(Y),
+  between(1, 10, X),
+  between(1, 10, Y),
   ValidX is X,
   ValidY is Y.
 
-notValidPosition(X, Y, ValidX, ValidY) :-
+validPosition(X, _Y, ValidX, ValidY) :-
+  number(X),
   \+ between(1, 10, X),
+  write('Not a valid coordinate! Try again:\n'),
+  inputPosition(ValidX, ValidY).
+
+validPosition(_X, Y, ValidX, ValidY) :-
+  number(Y),
   \+ between(1, 10, Y),
+  write('Not a valid coordinate! Try again:\n'),
+  inputPosition(ValidX, ValidY).
+
+validPosition(X, _Y, ValidX, ValidY) :-
+  \+ number(X),
+  write('Not a valid coordinate! Try again:\n'),
+  inputPosition(ValidX, ValidY).
+
+validPosition(_X, Y, ValidX, ValidY) :-
+  \+ number(Y),
+  write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
 checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
