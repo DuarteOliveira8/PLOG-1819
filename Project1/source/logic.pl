@@ -18,35 +18,41 @@ checkNumTrees(Player, Board) :-
   write(Player),
   write(' wins!\n').
 
-generateValidYukiPlays(OldX, OldY, MinaX, MinaY, Board, ValidPlays) :-
-  findall([X,Y], checkValidYukiPlay(OldX, OldY, X, Y, MinaX, MinaY, Board), ValidPlays).
+valid_moves(Board, Player, ValidPlays) :-
+  Player == 1,
+  findall([X,Y], checkValidYukiPlay(X, Y, Board), ValidPlays).
 
-generateValidMinaPlays(OldX, OldY, YukiX, YukiY, Board, ValidPlays) :-
-  findall([X,Y], checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board), ValidPlays).
+valid_moves(Board, Player, ValidPlays) :-
+  Player == 2,
+  findall([X,Y], checkValidMinaPlay(X, Y, Board), ValidPlays).
 
-checkValidYukiPlay(OldX, OldY, X, Y, MinaX, MinaY, Board) :-
+checkValidYukiPlay(X, Y, Board) :-
   between(1, 10, X),
   between(1, 10, Y),
-  DX is abs(X-OldX),
-  DY is abs(Y-OldY),
+  getYukiPosition(YukiX, YukiY, Board),
+  DX is abs(X-YukiX),
+  DY is abs(Y-YukiY),
   between(0, 1, DX),
   between(0, 1, DY),
   \+ checkValueMultList(1, X, Y, Board),
   \+ checkValueMultList(2, X, Y, Board),
   \+ checkValueMultList(5, X, Y, Board),
   \+ checkValueMultList(0, X, Y, Board),
+  getMinaPosition(MinaX, MinaY, Board),
   isVisible(MinaX, MinaY, X, Y, Board).
 
 /* remove ifs */
-checkValidMinaPlay(OldX, OldY, X, Y, YukiX, YukiY, Board) :-
+checkValidMinaPlay(X, Y, Board) :-
   between(1, 10, X),
   between(1, 10, Y),
-  DX is abs(X-OldX),
-  DY is abs(Y-OldY),
+  getMinaPosition(MinaX, MinaY, Board),
+  DX is abs(X-MinaX),
+  DY is abs(Y-MinaY),
   (DX > 0, DY == 0 ; DX == 0, DY > 0 ; DX == DY, DX =\= 0),
   \+ checkValueMultList(1, X, Y, Board),
   \+ checkValueMultList(2, X, Y, Board),
   \+ checkValueMultList(5, X, Y, Board),
+  getYukiPosition(YukiX, YukiY, Board),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
 
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-

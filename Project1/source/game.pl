@@ -18,44 +18,52 @@ initializeGame('p', 'p') :-
   inputPosition(MinaX, MinaY),
   addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
   write('\33\[2J'),
-  gameCycle(YukiX, YukiY, MinaX, MinaY, MinaBoard).
+  gameCycle(MinaBoard).
 
 initializeGame('p', 'c').
 
 initializeGame('c', 'c').
 
-gameCycle(YukiX, YukiY, MinaX, MinaY, Board) :-
-  yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, YukiBoard),
-  minaPlay(MinaX, MinaY, NewMinaX, NewMinaY, NewYukiX, NewYukiY, YukiBoard, MinaBoard),
-  gameCycle(NewYukiX, NewYukiY, NewMinaX, NewMinaY, MinaBoard).
+gameCycle(Board) :-
+  yukiTurn(Board, YukiBoard),
+  minaTurn(YukiBoard, MinaBoard),
+  gameCycle(MinaBoard).
 
-yukiPlay(YukiX, YukiY, NewYukiX, NewYukiY, MinaX, MinaY, Board, NewBoard) :-
+yukiTurn(Board, NewBoard) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
-  generateValidYukiPlays(YukiX, YukiY, MinaX, MinaY, Board, ValidPlays),
+  valid_moves(Board, 1, ValidPlays),
   checkGameState('Yuki', ValidPlays, Board),
   write(ValidPlays),nl,
+  askPlayerPosition(1, ValidPlays, Board, NewBoard).
+
+minaTurn(Board, NewBoard) :-
+  write('\33\[2J'),
+  board_display(Board, 'Mina'),
+  valid_moves(Board, 2, ValidPlays),
+  checkGameState('Mina', ValidPlays, Board),
+  write(ValidPlays),nl,
+  askPlayerPosition(2, ValidPlays, Board, NewBoard).
+
+askPlayerPosition(Player, ValidPlays, Board, NewBoard) :-
+  inputPosition(X, Y),
+  move(Player, X, Y, ValidPlays, Board, NewBoard).
+
+move(1, X, Y, ValidPlays, Board, NewBoard) :-
+  getYukiPosition(YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  askPlayerPosition(NewYukiX, NewYukiY, ValidPlays),
-  eatTree(NewYukiX, NewYukiY, NoYukiBoard, NoTreeBoard),
-  addPlayerPosition(1, NewYukiX, NewYukiY, NoTreeBoard, NewBoard).
+  checkValidPlayerInput(1, [X, Y], NewX, NewY, ValidPlays),
+  eatTree(NewX, NewY, NoYukiBoard, NoTreeBoard),
+  addPlayerPosition(1, NewX, NewY, NoTreeBoard, NewBoard).
+
+move(2, X, Y, ValidPlays, Board, NewBoard) :-
+  getMinaPosition(MinaX, MinaY, Board),
+  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
+  checkValidPlayerInput(2, [X, Y], NewX, NewY, ValidPlays),
+  addPlayerPosition(2, NewX, NewY, NoMinaBoard, NewBoard).
 
 eatTree(X, Y, Board, NBoard) :-
   addToMultListCell(-3, X, Y, Board, NBoard).
-
-minaPlay(MinaX, MinaY, NewMinaX, NewMinaY, YukiX, YukiY, Board, NewBoard) :-
-  write('\33\[2J'),
-  board_display(Board, 'Mina'),
-  generateValidMinaPlays(MinaX, MinaY, YukiX, YukiY, Board, ValidPlays),
-  checkGameState('Mina', ValidPlays, Board),
-  write(ValidPlays),nl,
-  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
-  askPlayerPosition(NewMinaX, NewMinaY, ValidPlays),
-  addPlayerPosition(2, NewMinaX, NewMinaY, NoMinaBoard, NewBoard).
-
-askPlayerPosition(NewX, NewY, ValidPlays) :-
-  inputPosition(NewX2, NewY2),
-  checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays).
 
 inputPosition(ValidX, ValidY) :-
   write('Type X coordinate: '),
@@ -96,15 +104,16 @@ validPosition(_X, Y, ValidX, ValidY) :-
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
-checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
-  member([NewX2, NewY2], ValidPlays),
-  NewX is NewX2,
-  NewY is NewY2.
+checkValidPlayerInput(_Player, [NewX, NewY], ValidX, ValidY, ValidPlays) :-
+  member([NewX, NewY], ValidPlays),
+  ValidX is NewX,
+  ValidY is NewY.
 
-checkValidPlayerInput([NewX2, NewY2], NewX, NewY, ValidPlays) :-
-  \+ member([NewX2, NewY2], ValidPlays),
+checkValidPlayerInput(Player, [NewX, NewY], ValidX, ValidY, ValidPlays) :-
+  \+ member([NewX, NewY], ValidPlays),
   write('Invalid move!\n'),
-  askPlayerPosition(NewX, NewY, ValidPlays).
+  inputPosition(NewX2, NewY2),
+  checkValidPlayerInput(Player, [NewX2, NewY2], ValidX, ValidY, ValidPlays).
 
 removePlayerPosition(Player, X, Y, Board, NBoard) :-
   addToMultListCell(-Player, X, Y, Board, NBoard).

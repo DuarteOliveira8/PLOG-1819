@@ -43,32 +43,12 @@ sumMultList(Sum, Total, [B1 | B]) :-
   NewSum is Sum+TotalList,
   sumMultList(NewSum, Total, B).
 
-/* gets element in list TODO */
+/* Get player position */
+getYukiPosition(YukiX, YukiY, Board) :-
+  checkValueMultList(1, YukiX, YukiY, Board).
 
-/* updates the game board TODO */
-setBoard(Game, NewGame, NewBoard) :-
-  replaceList(NewBoard, 1, Game, NewGame).
+getMinaPosition(MinaX, MinaY, Board) :-
+  checkValueMultList(2, MinaX, MinaY, Board).
 
-/* updates Yuki X coordinate */
-setYukiX(Game, NewGame, YukiX) :-
-  replaceList(YukiX, 2, Game, NewGame).
-
-/* updates Yuki Y coordinate */
-setYukiY(Game, NewGame, YukiY) :-
-  replaceList(YukiY, 3, Game, NewGame).
-
-/* updates Mina X coordinate */
-setMinaX(Game, NewGame, MinaX) :-
-  replaceList(MinaX, 4, Game, NewGame).
-
-/* updates Mina Y coordinate */
-setMinaY(Game, NewGame, MinaY) :-
-  replaceList(MinaY, 5, Game, NewGame).
-
-/* updates Player 1 points */
-setP1P(Game, NewGame, P1P) :-
-  replaceList(P1P, 6, Game, NewGame).
-
-/* updates Player 2 points */
-setP2P(Game, NewGame, P2P) :-
-  replaceList(P2P, 7, Game, NewGame).
+getMinaPosition(MinaX, MinaY, Board) :-
+  checkValueMultList(5, MinaX, MinaY, Board).
