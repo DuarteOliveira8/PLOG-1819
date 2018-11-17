@@ -1,22 +1,17 @@
-checkGameState('Yuki', ValidPlays, Board) :-
-  \+ checkValidPlays('Mina', ValidPlays),
-  \+ checkNumTrees('Mina', Board).
+game_over(Player, _Board, Winner, ValidPlays) :-
+  checkValidPlays(ValidPlays),
+  Winner = Player.
 
-checkGameState('Mina', ValidPlays, Board) :-
-  \+ checkValidPlays('Yuki', ValidPlays),
-  \+ checkNumTrees('Yuki', Board).
+game_over(Player, Board, Winner, _ValidPlays) :-
+  value(Board, Value),
+  Value == 93,
+  Winner = Player.
 
-checkValidPlays(Player, ValidPlays) :-
-  length(ValidPlays, 0),
-  write('Game Over: '),
-  write(Player),
-  write(' wins!\n').
+checkValidPlays(ValidPlays) :-
+  length(ValidPlays, 0).
 
-checkNumTrees(Player, Board) :-
-  sumMultList(0, 93, Board),
-  write('Game Over: '),
-  write(Player),
-  write(' wins!\n').
+value(Board, Value) :-
+  sumMultList(0, Value, Board).
 
 valid_moves(Board, Player, ValidPlays) :-
   Player == 1,

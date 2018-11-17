@@ -18,30 +18,42 @@ initializeGame('p', 'p') :-
   inputPosition(MinaX, MinaY),
   addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
   write('\33\[2J'),
-  gameCycle(MinaBoard).
+  gameCycle(1, MinaBoard, Winner),
+  write('Winner is '), write(Winner), nl.
 
 initializeGame('p', 'c').
 
 initializeGame('c', 'c').
 
-gameCycle(Board) :-
-  yukiTurn(Board, YukiBoard),
-  minaTurn(YukiBoard, MinaBoard),
-  gameCycle(MinaBoard).
+gameCycle(1, Board, Winner) :-
+  valid_moves(Board, 1, ValidPlays),
+  \+ game_over(2, Board, Winner, ValidPlays),
+  yukiTurn(Board, YukiBoard, ValidPlays),
+  gameCycle(2, YukiBoard, Winner).
 
-yukiTurn(Board, NewBoard) :-
+gameCycle(1, Board, Winner) :-
+  valid_moves(Board, 1, ValidPlays),
+  game_over(2, Board, Winner, ValidPlays).
+
+gameCycle(2, Board, Winner) :-
+  valid_moves(Board, 2, ValidPlays),
+  \+ game_over(1, Board, Winner, ValidPlays),
+  minaTurn(Board, MinaBoard, ValidPlays),
+  gameCycle(1, MinaBoard, Winner).
+
+gameCycle(2, Board, Winner) :-
+  valid_moves(Board, 2, ValidPlays),
+  game_over(1, Board, Winner, ValidPlays).
+
+yukiTurn(Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
-  valid_moves(Board, 1, ValidPlays),
-  checkGameState('Yuki', ValidPlays, Board),
   write(ValidPlays),nl,
   askPlayerPosition(1, ValidPlays, Board, NewBoard).
 
-minaTurn(Board, NewBoard) :-
+minaTurn(Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
-  valid_moves(Board, 2, ValidPlays),
-  checkGameState('Mina', ValidPlays, Board),
   write(ValidPlays),nl,
   askPlayerPosition(2, ValidPlays, Board, NewBoard).
 
