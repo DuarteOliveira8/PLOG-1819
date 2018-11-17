@@ -1,4 +1,52 @@
-initializeGame('p', 'p') :-
+initializeSet('p', 'p') :-
+  Score = [0, 0],
+  write('Player 1 plays as Yuki and Player 2 plays as Mina!\n'),
+  initializeGame('p', 'p', CharWinner1, Game1Board),
+  write('Game winner is '), write(CharWinner1), nl,
+  updateGame1Score(Score, CharWinner1, Game1Score),
+  write('Change sides and prepare for the next game!\n'),
+  initializeGame('p', 'p', CharWinner2, Game2Board),
+  write('Game winner is '), write(CharWinner2), nl,
+  updateGame2Score(Game1Score, CharWinner2, Game2Score),
+  announceSetWinner(Game2Score, CharWinner2, Game1Board, Game2Board).
+
+initializeSet('p', 'c') :-
+  Score = [0, 0],
+  write('Player plays as Yuki and Computer plays as Mina!\n'),
+  initializeGame('p', 'c', CharWinner1, Game1Board),
+  write('Game winner is '), write(CharWinner1), nl,
+  updateGame1Score(Score, CharWinner1, Game1Score),
+  write('Change sides and prepare for the next game!\n'),
+  initializeGame('c', 'p', CharWinner2, Game2Board),
+  write('Game winner is '), write(CharWinner2), nl,
+  updateGame2Score(Game1Score, CharWinner2, Game2Score),
+  announceSetWinner(Game2Score, CharWinner2, Game1Board, Game2Board).
+
+initializeSet('c', 'p') :-
+  Score = [0, 0],
+  write('Player plays as Yuki and Computer plays as Mina!\n'),
+  initializeGame('c', 'p', CharWinner1, Game1Board),
+  write('Game winner is '), write(CharWinner1), nl,
+  updateGame1Score(Score, CharWinner1, Game1Score),
+  write('Change sides and prepare for the next game!\n'),
+  initializeGame('p', 'c', CharWinner2, Game2Board),
+  write('Game winner is '), write(CharWinner2), nl,
+  updateGame2Score(Game1Score, CharWinner2, Game2Score),
+  announceSetWinner(Game2Score, CharWinner2, Game1Board, Game2Board).
+
+initializeSet('c', 'c') :-
+  Score = [0, 0],
+  write('Computer 1 plays as Yuki and Computer 2 plays as Mina!\n'),
+  initializeGame('c', 'c', CharWinner1, Game1Board),
+  write('Game winner is '), write(CharWinner1), nl,
+  updateGame1Score(Score, CharWinner1, Game1Score),
+  write('Change sides and prepare for the next game!\n'),
+  initializeGame('c', 'c', CharWinner2, Game2Board),
+  write('Game winner is '), write(CharWinner2), nl,
+  updateGame2Score(Game1Score, CharWinner2, Game2Score),
+  announceSetWinner(Game2Score, CharWinner2, Game1Board, Game2Board).
+
+initializeGame('p', 'p', Winner, FinalBoard) :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -16,62 +64,145 @@ initializeGame('p', 'p') :-
   write('\33\[2J'),
   board_display(YukiBoard, 'Mina'),
   inputPosition(MinaX, MinaY),
+  isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, YukiBoard),
+  addPlayerPosition(2, ValidMinaX, ValidMinaY, YukiBoard, MinaBoard),
+  write('\33\[2J'),
+  gameCycle('Yuki', 'p', 1, MinaBoard, Winner, FinalBoard).
+
+initializeGame('p', 'c', Winner, FinalBoard) :-
+  Board = [[3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3]],
+  board_display(Board, 'Yuki'),
+  inputPosition(YukiX, YukiY),
+  eatTree(YukiX, YukiY, Board, NoTreeBoard),
+  addPlayerPosition(1, YukiX, YukiY, NoTreeBoard, YukiBoard),
+  write('\33\[2J'),
+  board_display(YukiBoard, 'Mina'),
+  writeChoosingMessage,
+  chooseBestFirstPlay(MinaX, MinaY, YukiBoard),
   addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
   write('\33\[2J'),
-  gameCycle(1, MinaBoard, Winner),
-  write('Winner is '), write(Winner), nl.
+  gameCycle('Yuki', 'p', 2, MinaBoard, Winner, FinalBoard).
 
-initializeGame('p', 'c').
+initializeGame('c', 'p', Winner, FinalBoard) :-
+  Board = [[3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3]],
+  board_display(Board, 'Yuki'),
+  writeChoosingMessage,
+  chooseRandomFirstPlay(YukiX, YukiY),
+  eatTree(YukiX, YukiY, Board, NoTreeBoard),
+  addPlayerPosition(1, YukiX, YukiY, NoTreeBoard, YukiBoard),
+  write('\33\[2J'),
+  board_display(YukiBoard, 'Mina'),
+  inputPosition(MinaX, MinaY),
+  isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, YukiBoard),
+  addPlayerPosition(2, ValidMinaX, ValidMinaY, YukiBoard, MinaBoard),
+  write('\33\[2J'),
+  gameCycle('Yuki', 'c', 2, MinaBoard, Winner, FinalBoard).
 
-initializeGame('c', 'c').
+initializeGame('c', 'c', Winner, FinalBoard) :-
+  Board = [[3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3],
+           [3,3,3,3,3,3,3,3,3,3]],
+  board_display(Board, 'Yuki'),
+  writeChoosingMessage,
+  chooseRandomFirstPlay(YukiX, YukiY),
+  eatTree(YukiX, YukiY, Board, NoTreeBoard),
+  addPlayerPosition(1, YukiX, YukiY, NoTreeBoard, YukiBoard),
+  write('\33\[2J'),
+  board_display(YukiBoard, 'Mina'),
+  writeChoosingMessage,
+  chooseBestFirstPlay(MinaX, MinaY, YukiBoard),
+  addPlayerPosition(2, MinaX, MinaY, YukiBoard, MinaBoard),
+  write('\33\[2J'),
+  gameCycle('Yuki', 'c', 3, MinaBoard, Winner, FinalBoard).
 
-gameCycle(1, Board, Winner) :-
-  valid_moves(Board, 1, ValidPlays),
-  \+ game_over(2, Board, Winner, ValidPlays),
-  yukiTurn(Board, YukiBoard, ValidPlays),
-  gameCycle(2, YukiBoard, Winner).
+gameCycle(Player, Type, Mode, Board, Winner, FinalBoard) :-
+  valid_moves(Board, Player, ValidPlays),
+  getOppositePlayer(Player, NextPlayer),
+  \+ game_over(NextPlayer, Board, Winner, ValidPlays),
+  playerTurn(Player, Type, Board, MinaBoard, ValidPlays),
+  getNextType(Type, Mode, NewType),
+  write(NewType),nl,
+  gameCycle(NextPlayer, NewType, Mode, MinaBoard, Winner, FinalBoard).
 
-gameCycle(1, Board, Winner) :-
-  valid_moves(Board, 1, ValidPlays),
-  game_over(2, Board, Winner, ValidPlays).
+gameCycle(Player, _Type, _Mode, Board, Winner, FinalBoard) :-
+  valid_moves(Board, Player, ValidPlays),
+  getOppositePlayer(Player, NextPlayer),
+  game_over(NextPlayer, Board, Winner, ValidPlays),
+  FinalBoard = Board.
 
-gameCycle(2, Board, Winner) :-
-  valid_moves(Board, 2, ValidPlays),
-  \+ game_over(1, Board, Winner, ValidPlays),
-  minaTurn(Board, MinaBoard, ValidPlays),
-  gameCycle(1, MinaBoard, Winner).
-
-gameCycle(2, Board, Winner) :-
-  valid_moves(Board, 2, ValidPlays),
-  game_over(1, Board, Winner, ValidPlays).
-
-yukiTurn(Board, NewBoard, ValidPlays) :-
+playerTurn('Yuki', 'p', Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
   write(ValidPlays),nl,
-  askPlayerPosition(1, ValidPlays, Board, NewBoard).
+  askPlayerPosition('Yuki', ValidPlays, Board, NewBoard).
 
-minaTurn(Board, NewBoard, ValidPlays) :-
+playerTurn('Yuki', 'c', Board, NewBoard, ValidPlays) :-
+  write('\33\[2J'),
+  board_display(Board, 'Yuki'),
+  write(ValidPlays),nl,
+  getYukiPosition(YukiX, YukiY, Board),
+  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
+  writeChoosingMessage,
+  chooseBestYukiPlay(NewYukiX, NewYukiY, Board, ValidPlays),
+  eatTree(NewYukiX, NewYukiY, NoYukiBoard, NoTreeBoard),
+  addPlayerPosition(1, NewYukiX, NewYukiY, NoTreeBoard, NewBoard).
+
+playerTurn('Mina', 'p', Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
   write(ValidPlays),nl,
-  askPlayerPosition(2, ValidPlays, Board, NewBoard).
+  askPlayerPosition('Mina', ValidPlays, Board, NewBoard).
+
+playerTurn('Mina', 'c', Board, NewBoard, ValidPlays) :-
+  write('\33\[2J'),
+  board_display(Board, 'Mina'),
+  write(ValidPlays),nl,
+  getMinaPosition(MinaX, MinaY, Board),
+  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
+  writeChoosingMessage,
+  chooseBestMinaPlay(NewMinaX, NewMinaY, Board, ValidPlays),
+  addPlayerPosition(2, NewMinaX, NewMinaY, NoMinaBoard, NewBoard).
 
 askPlayerPosition(Player, ValidPlays, Board, NewBoard) :-
   inputPosition(X, Y),
   move(Player, X, Y, ValidPlays, Board, NewBoard).
 
-move(1, X, Y, ValidPlays, Board, NewBoard) :-
+move('Yuki', X, Y, ValidPlays, Board, NewBoard) :-
   getYukiPosition(YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  checkValidPlayerInput(1, [X, Y], NewX, NewY, ValidPlays),
+  checkValidPlayerInput([X, Y], NewX, NewY, ValidPlays),
   eatTree(NewX, NewY, NoYukiBoard, NoTreeBoard),
   addPlayerPosition(1, NewX, NewY, NoTreeBoard, NewBoard).
 
-move(2, X, Y, ValidPlays, Board, NewBoard) :-
+move('Mina', X, Y, ValidPlays, Board, NewBoard) :-
   getMinaPosition(MinaX, MinaY, Board),
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
-  checkValidPlayerInput(2, [X, Y], NewX, NewY, ValidPlays),
+  checkValidPlayerInput([X, Y], NewX, NewY, ValidPlays),
   addPlayerPosition(2, NewX, NewY, NoMinaBoard, NewBoard).
 
 eatTree(X, Y, Board, NBoard) :-
@@ -116,19 +247,31 @@ validPosition(_X, Y, ValidX, ValidY) :-
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
-checkValidPlayerInput(_Player, [NewX, NewY], ValidX, ValidY, ValidPlays) :-
+checkValidPlayerInput([NewX, NewY], ValidX, ValidY, ValidPlays) :-
   member([NewX, NewY], ValidPlays),
   ValidX is NewX,
   ValidY is NewY.
 
-checkValidPlayerInput(Player, [NewX, NewY], ValidX, ValidY, ValidPlays) :-
+checkValidPlayerInput([NewX, NewY], ValidX, ValidY, ValidPlays) :-
   \+ member([NewX, NewY], ValidPlays),
   write('Invalid move!\n'),
   inputPosition(NewX2, NewY2),
-  checkValidPlayerInput(Player, [NewX2, NewY2], ValidX, ValidY, ValidPlays).
+  checkValidPlayerInput([NewX2, NewY2], ValidX, ValidY, ValidPlays).
 
-removePlayerPosition(Player, X, Y, Board, NBoard) :-
-  addToMultListCell(-Player, X, Y, Board, NBoard).
+isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
+  \+ isVisible(MinaX, MinaY, YukiX, YukiY, Board),
+  \+ checkValueMultList(1, MinaX, MinaY, Board),
+  ValidMinaX is MinaX,
+  ValidMinaY is MinaY.
 
-addPlayerPosition(Player, X, Y, Board, NBoard) :-
-  addToMultListCell(Player, X, Y, Board, NBoard).
+isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
+  isVisible(MinaX, MinaY, YukiX, YukiY, Board),
+  write('Invalid first coordinates! Try again:\n'),
+  inputPosition(MinaX2, MinaY2),
+  isValidFirstPlay(MinaX2, MinaY2, ValidMinaX, ValidMinaY, YukiX, YukiY, Board).
+
+isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
+  checkValueMultList(1, MinaX, MinaY, Board),
+  write('Invalid first coordinates! Try again:\n'),
+  inputPosition(MinaX2, MinaY2),
+  isValidFirstPlay(MinaX2, MinaY2, ValidMinaX, ValidMinaY, YukiX, YukiY, Board).

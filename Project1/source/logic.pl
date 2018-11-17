@@ -14,11 +14,11 @@ value(Board, Value) :-
   sumMultList(0, Value, Board).
 
 valid_moves(Board, Player, ValidPlays) :-
-  Player == 1,
+  Player == 'Yuki',
   findall([X,Y], checkValidYukiPlay(X, Y, Board), ValidPlays).
 
 valid_moves(Board, Player, ValidPlays) :-
-  Player == 2,
+  Player == 'Mina',
   findall([X,Y], checkValidMinaPlay(X, Y, Board), ValidPlays).
 
 checkValidYukiPlay(X, Y, Board) :-
@@ -128,3 +128,61 @@ calcNextMinaCoords(DX, _DY, _MinaX, MinaY, _CRXY, CRYX, _NewMinaX, NewMinaY) :-
 calcNextMinaCoords(_DX, DY, MinaX, _MinaY, CRXY, _CRYX, NewMinaX, _NewMinaY) :-
   DY == 0,
   NewMinaX is MinaX-CRXY.
+
+updateGame1Score(Score, 'Yuki', NewScore) :-
+  addToListCell(1, 1, Score, NewScore).
+
+updateGame1Score(Score, 'Mina', NewScore) :-
+  addToListCell(1, 2, Score, NewScore).
+
+updateGame2Score(Score, 'Yuki', NewScore) :-
+  addToListCell(1, 2, Score, NewScore).
+
+updateGame2Score(Score, 'Mina', NewScore) :-
+  addToListCell(1, 1, Score, NewScore).
+
+announceSetWinner(Score, _CharWinner, _Game1Board, _Game2Board) :-
+  checkValueList(2, 1, Score),
+  write('Player 1 wins!').
+
+announceSetWinner(Score, _CharWinner, _Game1Board, _Game2Board) :-
+  checkValueList(2, 2, Score),
+  write('Player 2 wins!').
+
+announceSetWinner(Score, 'Yuki', G1B, G2B) :-
+  checkValueList(1, 1, Score),
+  checkValueList(1, 2, Score),
+  removePlayersBoard(G1B, NoPlayersG1B),
+  removePlayersBoard(G2B, NoPlayersG2B),
+  sumMultList(0, NumTreesG1, NoPlayersG1B),
+  sumMultList(0, NumTreesG2, NoPlayersG2B),
+  getFinalWinner('Yuki', NumTreesG1, NumTreesG2).
+
+announceSetWinner(Score, 'Mina', G1B, G2B) :-
+  checkValueList(1, 1, Score),
+  checkValueList(1, 2, Score),
+  removePlayersBoard(G1B, NoPlayersG1B),
+  removePlayersBoard(G2B, NoPlayersG2B),
+  sumMultList(0, NumTreesG1, NoPlayersG1B),
+  sumMultList(0, NumTreesG2, NoPlayersG2B),
+  getFinalWinner('Mina', NumTreesG1, NumTreesG2).
+
+getFinalWinner('Yuki', NumTreesG1, NumTreesG2) :-
+  NumTreesG1 < NumTreesG2,
+  write('Player 1 wins!').
+
+getFinalWinner('Yuki', NumTreesG1, NumTreesG2) :-
+  NumTreesG1 > NumTreesG2,
+  write('Player 2 wins!').
+
+getFinalWinner('Mina', NumTreesG1, NumTreesG2) :-
+  NumTreesG1 > NumTreesG2,
+  write('Player 1 wins!').
+
+getFinalWinner('Mina', NumTreesG1, NumTreesG2) :-
+  NumTreesG1 < NumTreesG2,
+  write('Player 2 wins!').
+
+getFinalWinner(_CharWinner, NumTreesG1, NumTreesG2) :-
+  NumTreesG1 == NumTreesG2,
+  write('It\'s a draw').

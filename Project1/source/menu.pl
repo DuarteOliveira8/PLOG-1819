@@ -40,19 +40,18 @@ displayMenu :-
 manageOptions(1) :-
   write('\33\[2J'),
   write('You two have fun!\n'),
-  initializeGame('p', 'p'),
+  initializeSet('p', 'p'),
   menu.
 
 manageOptions(2) :-
   write('\33\[2J'),
-  write('Good luck...\n'),
-  initializeGame('p', 'c'),
+  chooseFirstPlayer,
   menu.
 
 manageOptions(3) :-
   write('\33\[2J'),
   write('This is going to be interesting.\n'),
-  initializeGame('c', 'c'),
+  initializeSet('c', 'c'),
   menu.
 
 manageOptions(4) :-
@@ -68,3 +67,28 @@ manageOptions(OTHER) :-
   read(Option),
   nl,
   manageOptions(Option).
+
+chooseFirstPlayer :-
+  write('Who plays first?\n'),
+  write('1) Player.\n'),
+  write('2) Elon Musk\'s beast AI.\n'),
+  read(FirstPlayer),
+  manageFirstPlayerOption(FirstPlayer).
+
+manageFirstPlayerOption(1) :-
+  write('\33\[2J'),
+  write('Good luck...\n'),
+  initializeSet('p', 'c').
+
+manageFirstPlayerOption(2) :-
+  write('\33\[2J'),
+  write('Good luck...\n'),
+  initializeSet('c', 'p').
+
+manageFirstPlayerOption(OTHER) :-
+  OTHER =\= 1,
+  OTHER =\= 2,
+  write('I don\'t know what you just said but try again: '),
+  read(FirstPlayer),
+  nl,
+  manageFirstPlayerOption(FirstPlayer).
