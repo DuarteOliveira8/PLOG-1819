@@ -40,7 +40,7 @@ displayMenu :-
 manageOptions(1) :-
   write('\33\[2J'),
   write('You two have fun!\n'),
-  initializeSet('p', 'p'),
+  initializeSet('p', 'p', _),
   menu.
 
 manageOptions(2) :-
@@ -51,12 +51,19 @@ manageOptions(2) :-
 manageOptions(3) :-
   write('\33\[2J'),
   write('This is going to be interesting.\n'),
-  initializeSet('c', 'c'),
+  chooseDifficulty('c', 'c'),
   menu.
 
 manageOptions(4) :-
   write('\33\[2J'),
   write('KBye.\n').
+
+manageOptions(OTHER) :-
+  \+ number(OTHER),
+  write('I don\'t know what you just said but try again: '),
+  read(Option),
+  nl,
+  manageOptions(Option).
 
 manageOptions(OTHER) :-
   OTHER =\= 1,
@@ -78,12 +85,12 @@ chooseFirstPlayer :-
 manageFirstPlayerOption(1) :-
   write('\33\[2J'),
   write('Good luck...\n'),
-  initializeSet('p', 'c').
+  chooseDifficulty('p', 'c').
 
 manageFirstPlayerOption(2) :-
   write('\33\[2J'),
   write('Good luck...\n'),
-  initializeSet('c', 'p').
+  chooseDifficulty('c', 'p').
 
 manageFirstPlayerOption(OTHER) :-
   OTHER =\= 1,
@@ -92,3 +99,25 @@ manageFirstPlayerOption(OTHER) :-
   read(FirstPlayer),
   nl,
   manageFirstPlayerOption(FirstPlayer).
+
+chooseDifficulty(Type1, Type2) :-
+  write('Choose the computer\'s mode:\n'),
+  write('1) Easy: He will try to go easy on you.\n'),
+  write('2) Hard: You don\'t have a chance.\n'),
+  read(Difficulty),
+  nl,
+  manageDifficultyOption(Type1, Type2, Difficulty).
+
+manageDifficultyOption(Type1, Type2, 1) :-
+  initializeSet(Type1, Type2, 1).
+
+manageDifficultyOption(Type1, Type2, 2) :-
+  initializeSet(Type1, Type2, 2).
+
+manageDifficultyOption(Type1, Type2, OTHER) :-
+  OTHER =\= 1,
+  OTHER =\= 2,
+  write('I don\'t know what you just said but try again: '),
+  read(Difficulty),
+  nl,
+  manageDifficultyOption(Type1, Type2, Difficulty).
