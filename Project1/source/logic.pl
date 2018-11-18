@@ -13,12 +13,10 @@ checkValidPlays(ValidPlays) :-
 value(Board, Value) :-
   sumMultList(0, Value, Board).
 
-valid_moves(Board, Player, ValidPlays) :-
-  Player == 'Yuki',
+valid_moves(Board, 'Yuki', ValidPlays) :-
   findall([X,Y], checkValidYukiPlay(X, Y, Board), ValidPlays).
 
-valid_moves(Board, Player, ValidPlays) :-
-  Player == 'Mina',
+valid_moves(Board, 'Mina', ValidPlays) :-
   findall([X,Y], checkValidMinaPlay(X, Y, Board), ValidPlays).
 
 checkValidYukiPlay(X, Y, Board) :-
