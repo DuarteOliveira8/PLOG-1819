@@ -218,12 +218,9 @@ playerTurn('Yuki', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
   write(ValidPlays),nl,
-  getYukiPosition(YukiX, YukiY, Board),
-  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
   writeChoosingMessage,
   choosePlay('Yuki', Difficulty, NewYukiX, NewYukiY, Board, ValidPlays),
-  eatTree(NewYukiX, NewYukiY, NoYukiBoard, NoTreeBoard),
-  addPlayerPosition(1, NewYukiX, NewYukiY, NoTreeBoard, NewBoard).
+  move('Yuki', 'c', NewYukiX, NewYukiY, ValidPlays, Board, NewBoard).
 
 playerTurn('Mina', 'p', _Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
@@ -235,28 +232,37 @@ playerTurn('Mina', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
   write(ValidPlays),nl,
-  getMinaPosition(MinaX, MinaY, Board),
-  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
   writeChoosingMessage,
   choosePlay('Mina', Difficulty, NewMinaX, NewMinaY, Board, ValidPlays),
-  addPlayerPosition(2, NewMinaX, NewMinaY, NoMinaBoard, NewBoard).
+  move('Mina', 'c', NewMinaX, NewMinaY, ValidPlays, Board, NewBoard).
 
 askPlayerPosition(Player, ValidPlays, Board, NewBoard) :-
   inputPosition(X, Y),
-  move(Player, X, Y, ValidPlays, Board, NewBoard).
+  move(Player, 'p', X, Y, ValidPlays, Board, NewBoard).
 
-move('Yuki', X, Y, ValidPlays, Board, NewBoard) :-
+move('Yuki', 'p', X, Y, ValidPlays, Board, NewBoard) :-
   getYukiPosition(YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
   checkValidPlayerInput([X, Y], NewX, NewY, ValidPlays),
   eatTree(NewX, NewY, NoYukiBoard, NoTreeBoard),
   addPlayerPosition(1, NewX, NewY, NoTreeBoard, NewBoard).
 
-move('Mina', X, Y, ValidPlays, Board, NewBoard) :-
+move('Yuki', 'c', X, Y, _ValidPlays, Board, NewBoard) :-
+  getYukiPosition(YukiX, YukiY, Board),
+  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
+  eatTree(X, Y, NoYukiBoard, NoTreeBoard),
+  addPlayerPosition(1, X, Y, NoTreeBoard, NewBoard).
+
+move('Mina', 'p', X, Y, ValidPlays, Board, NewBoard) :-
   getMinaPosition(MinaX, MinaY, Board),
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
   checkValidPlayerInput([X, Y], NewX, NewY, ValidPlays),
   addPlayerPosition(2, NewX, NewY, NoMinaBoard, NewBoard).
+
+move('Mina', 'c', X, Y, _ValidPlays, Board, NewBoard) :-
+  getMinaPosition(MinaX, MinaY, Board),
+  removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
+  addPlayerPosition(2, X, Y, NoMinaBoard, NewBoard).
 
 eatTree(X, Y, Board, NBoard) :-
   addToMultListCell(-3, X, Y, Board, NBoard).
