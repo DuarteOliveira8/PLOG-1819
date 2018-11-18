@@ -41,12 +41,24 @@ checkValidMinaPlay(X, Y, Board) :-
   getMinaPosition(MinaX, MinaY, Board),
   DX is abs(X-MinaX),
   DY is abs(Y-MinaY),
-  (DX > 0, DY == 0 ; DX == 0, DY > 0 ; DX == DY, DX =\= 0),
+  isOrtogonalOrDiagonal(DX, DY),
   \+ checkValueMultList(1, X, Y, Board),
   \+ checkValueMultList(2, X, Y, Board),
   \+ checkValueMultList(5, X, Y, Board),
   getYukiPosition(YukiX, YukiY, Board),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
+
+isOrtogonalOrDiagonal(DX, DY) :-
+  DX > 0,
+  DY == 0.
+
+isOrtogonalOrDiagonal(DX, DY) :-
+  DX == 0,
+  DY > 0.
+
+isOrtogonalOrDiagonal(DX, DY) :-
+  DX == DY,
+  DX =\= 0.
 
 isVisible(MinaX, MinaY, YukiX, YukiY, Board) :-
   DX is MinaX-YukiX,
