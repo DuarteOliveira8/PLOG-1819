@@ -1,3 +1,4 @@
+/* Initializes game settings for player vs player and starts game */
 initializeSet('p', 'p', Difficulty) :-
   Score = [0, 0],
   write('Player 1 plays as Yuki and Player 2 plays as Mina!\n'),
@@ -23,6 +24,7 @@ initializeSet('p', 'p', Difficulty) :-
   sleep(3),
   write('\33\[2J').
 
+/* Initializes game settings for player vs computer and starts game */
 initializeSet('p', 'c', Difficulty) :-
   Score = [0, 0],
   write('Player plays as Yuki and Computer plays as Mina!\n'),
@@ -48,6 +50,7 @@ initializeSet('p', 'c', Difficulty) :-
   sleep(3),
   write('\33\[2J').
 
+/* Initializes game settings for computer vs player and starts game */
 initializeSet('c', 'p', Difficulty) :-
   Score = [0, 0],
   write('Player plays as Yuki and Computer plays as Mina!\n'),
@@ -73,6 +76,7 @@ initializeSet('c', 'p', Difficulty) :-
   sleep(3),
   write('\33\[2J').
 
+/* Initializes game settings for computer vs computer and starts game */
 initializeSet('c', 'c', Difficulty) :-
   Score = [0, 0],
   write('Computer 1 plays as Yuki and Computer 2 plays as Mina!\n'),
@@ -98,6 +102,7 @@ initializeSet('c', 'c', Difficulty) :-
   sleep(3),
   write('\33\[2J').
 
+/* Initializes player vs player game with difficulty in argument */
 initializeGame('p', 'p', Difficulty, Winner, FinalBoard) :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -121,6 +126,7 @@ initializeGame('p', 'p', Difficulty, Winner, FinalBoard) :-
   write('\33\[2J'),
   gameCycle('Yuki', 'p', 1, Difficulty, MinaBoard, Winner, FinalBoard).
 
+/* Initializes player vs computer game with difficulty in argument */
 initializeGame('p', 'c', Difficulty, Winner, FinalBoard) :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -144,6 +150,7 @@ initializeGame('p', 'c', Difficulty, Winner, FinalBoard) :-
   write('\33\[2J'),
   gameCycle('Yuki', 'p', 2, Difficulty, MinaBoard, Winner, FinalBoard).
 
+/* Initializes computer vs player game with difficulty in argument */
 initializeGame('c', 'p', Difficulty, Winner, FinalBoard) :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -168,6 +175,7 @@ initializeGame('c', 'p', Difficulty, Winner, FinalBoard) :-
   write('\33\[2J'),
   gameCycle('Yuki', 'c', 2, Difficulty, MinaBoard, Winner, FinalBoard).
 
+/* Initializes computer vs computer game with difficulty in argument */
 initializeGame('c', 'c', Difficulty, Winner, FinalBoard) :-
   Board = [[3,3,3,3,3,3,3,3,3,3],
            [3,3,3,3,3,3,3,3,3,3],
@@ -192,6 +200,7 @@ initializeGame('c', 'c', Difficulty, Winner, FinalBoard) :-
   write('\33\[2J'),
   gameCycle('Yuki', 'c', 3, Difficulty, MinaBoard, Winner, FinalBoard).
 
+/* Game Cycle predicate */
 gameCycle(Player, Type, Mode, Difficulty, Board, Winner, FinalBoard) :-
   valid_moves(Board, Player, ValidPlays),
   getOppositePlayer(Player, NextPlayer),
@@ -200,6 +209,7 @@ gameCycle(Player, Type, Mode, Difficulty, Board, Winner, FinalBoard) :-
   getNextType(Type, Mode, NewType),
   gameCycle(NextPlayer, NewType, Mode, Difficulty, MinaBoard, Winner, FinalBoard).
 
+/* Game Cycle predicate */
 gameCycle(Player, _Type, _Mode, _Difficulty, Board, Winner, FinalBoard) :-
   valid_moves(Board, Player, ValidPlays),
   getOppositePlayer(Player, NextPlayer),
@@ -208,12 +218,14 @@ gameCycle(Player, _Type, _Mode, _Difficulty, Board, Winner, FinalBoard) :-
   board_display(Board, Player),
   FinalBoard = Board.
 
+/* Manages Yuki human player turn and asks position */
 playerTurn('Yuki', 'p', _Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
   write(ValidPlays),nl,
   askPlayerPosition('Yuki', ValidPlays, Board, NewBoard).
 
+/* Manages Yuki computer turn and chooses position based on difficulty */
 playerTurn('Yuki', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
@@ -222,12 +234,14 @@ playerTurn('Yuki', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   choosePlay('Yuki', Difficulty, NewYukiX, NewYukiY, Board, ValidPlays),
   move('Yuki', 'c', NewYukiX, NewYukiY, ValidPlays, Board, NewBoard).
 
+/* Manages Mina human player turn and asks position */
 playerTurn('Mina', 'p', _Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
   write(ValidPlays),nl,
   askPlayerPosition('Mina', ValidPlays, Board, NewBoard).
 
+/* Manages Mina computer turn and chooses position based on difficulty */
 playerTurn('Mina', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
@@ -236,10 +250,12 @@ playerTurn('Mina', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   choosePlay('Mina', Difficulty, NewMinaX, NewMinaY, Board, ValidPlays),
   move('Mina', 'c', NewMinaX, NewMinaY, ValidPlays, Board, NewBoard).
 
+/* Asks for input for player position and moves player */
 askPlayerPosition(Player, ValidPlays, Board, NewBoard) :-
   inputPosition(X, Y),
   move(Player, 'p', X, Y, ValidPlays, Board, NewBoard).
 
+/* Move predicate for human player that moves Yuki if new position is valid */
 move('Yuki', 'p', X, Y, ValidPlays, Board, NewBoard) :-
   getYukiPosition(YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
@@ -247,18 +263,21 @@ move('Yuki', 'p', X, Y, ValidPlays, Board, NewBoard) :-
   eatTree(NewX, NewY, NoYukiBoard, NoTreeBoard),
   addPlayerPosition(1, NewX, NewY, NoTreeBoard, NewBoard).
 
+/* Move predicate for computer Yuki */
 move('Yuki', 'c', X, Y, _ValidPlays, Board, NewBoard) :-
   getYukiPosition(YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
   eatTree(X, Y, NoYukiBoard, NoTreeBoard),
   addPlayerPosition(1, X, Y, NoTreeBoard, NewBoard).
 
+/* Move predicate for human player that moves Mina if new position is valid */
 move('Mina', 'p', X, Y, ValidPlays, Board, NewBoard) :-
   getMinaPosition(MinaX, MinaY, Board),
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
   checkValidPlayerInput([X, Y], NewX, NewY, ValidPlays),
   addPlayerPosition(2, NewX, NewY, NoMinaBoard, NewBoard).
 
+/* Move predicate for computer Mina */
 move('Mina', 'c', X, Y, _ValidPlays, Board, NewBoard) :-
   getMinaPosition(MinaX, MinaY, Board),
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
