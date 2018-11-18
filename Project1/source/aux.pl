@@ -69,6 +69,12 @@ removePlayersBoard(Board, NewBoard) :-
   checkValueMultList(2, MinaX, MinaY, NoYukiBoard),
   removePlayerPosition(2, MinaX, MinaY, NoYukiBoard, NewBoard).
 
+removePlayersBoard(Board, NewBoard) :-
+  checkValueMultList(1, YukiX, YukiY, Board),
+  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
+  checkValueMultList(5, MinaX, MinaY, NoYukiBoard),
+  removePlayerPosition(5, MinaX, MinaY, NoYukiBoard, NewBoard).
+
 /* Calculates the distances between points V to the point [X, Y] */
 calcDistances([], _X, _Y, []).
 
