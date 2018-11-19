@@ -9,6 +9,6 @@
 :- use_module(library(between)).
 :- use_module(library(random)).
 
-/* Main Game Predicate */
+/* Main Game Predicate. */
 play :-
   menu.
