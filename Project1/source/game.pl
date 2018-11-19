@@ -222,14 +222,12 @@ gameCycle(Player, _Type, _Mode, _Difficulty, Board, Winner, FinalBoard) :-
 playerTurn('Yuki', 'p', _Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
-  write(ValidPlays),nl,
   askPlayerPosition('Yuki', ValidPlays, Board, NewBoard).
 
 /* Manages Yuki computer turn and chooses position based on difficulty */
 playerTurn('Yuki', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Yuki'),
-  write(ValidPlays),nl,
   writeChoosingMessage,
   choosePlay('Yuki', Difficulty, NewYukiX, NewYukiY, Board, ValidPlays),
   move('Yuki', 'c', NewYukiX, NewYukiY, ValidPlays, Board, NewBoard).
@@ -238,14 +236,12 @@ playerTurn('Yuki', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
 playerTurn('Mina', 'p', _Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
-  write(ValidPlays),nl,
   askPlayerPosition('Mina', ValidPlays, Board, NewBoard).
 
 /* Manages Mina computer turn and chooses position based on difficulty */
 playerTurn('Mina', 'c', Difficulty, Board, NewBoard, ValidPlays) :-
   write('\33\[2J'),
   board_display(Board, 'Mina'),
-  write(ValidPlays),nl,
   writeChoosingMessage,
   choosePlay('Mina', Difficulty, NewMinaX, NewMinaY, Board, ValidPlays),
   move('Mina', 'c', NewMinaX, NewMinaY, ValidPlays, Board, NewBoard).
