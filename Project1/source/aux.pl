@@ -35,7 +35,7 @@ replaceMultList(Value, X, Y, [B1 | B], [B1 | NB]) :-
 checkValueList(Value, X, List) :-
   nth1(X, List, Value).
 
-checkValueMultList(Value, X, Y, Board) :-
+value(Value, X, Y, Board) :-
   nth1(Y, Board, SubList),
   nth1(X, SubList, Value).
 
@@ -48,13 +48,13 @@ sumMultList(Sum, Total, [B1 | B]) :-
 
 /* Get player position */
 getYukiPosition(YukiX, YukiY, Board) :-
-  checkValueMultList(1, YukiX, YukiY, Board).
+  value(1, YukiX, YukiY, Board).
 
 getMinaPosition(MinaX, MinaY, Board) :-
-  checkValueMultList(2, MinaX, MinaY, Board).
+  value(2, MinaX, MinaY, Board).
 
 getMinaPosition(MinaX, MinaY, Board) :-
-  checkValueMultList(5, MinaX, MinaY, Board).
+  value(5, MinaX, MinaY, Board).
 
 /* Removes or adds player to the board */
 removePlayerPosition(Player, X, Y, Board, NBoard) :-
@@ -64,15 +64,15 @@ addPlayerPosition(Player, X, Y, Board, NBoard) :-
   addToMultListCell(Player, X, Y, Board, NBoard).
 
 removePlayersBoard(Board, NewBoard) :-
-  checkValueMultList(1, YukiX, YukiY, Board),
+  value(1, YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  checkValueMultList(2, MinaX, MinaY, NoYukiBoard),
+  value(2, MinaX, MinaY, NoYukiBoard),
   removePlayerPosition(2, MinaX, MinaY, NoYukiBoard, NewBoard).
 
 removePlayersBoard(Board, NewBoard) :-
-  checkValueMultList(1, YukiX, YukiY, Board),
+  value(1, YukiX, YukiY, Board),
   removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  checkValueMultList(5, MinaX, MinaY, NoYukiBoard),
+  value(5, MinaX, MinaY, NoYukiBoard),
   removePlayerPosition(5, MinaX, MinaY, NoYukiBoard, NewBoard).
 
 /* Calculates the distances between points V to the point [X, Y] */

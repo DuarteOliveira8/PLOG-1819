@@ -338,7 +338,7 @@ checkValidPlayerInput([NewX, NewY], ValidX, ValidY, ValidPlays) :-
 
 isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
   \+ isVisible(MinaX, MinaY, YukiX, YukiY, Board),
-  \+ checkValueMultList(1, MinaX, MinaY, Board),
+  \+ value(1, MinaX, MinaY, Board),
   ValidMinaX is MinaX,
   ValidMinaY is MinaY.
 
@@ -349,7 +349,7 @@ isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
   isValidFirstPlay(MinaX2, MinaY2, ValidMinaX, ValidMinaY, YukiX, YukiY, Board).
 
 isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
-  checkValueMultList(1, MinaX, MinaY, Board),
+  value(1, MinaX, MinaY, Board),
   write('Invalid first coordinates! Try again:\n'),
   inputPosition(MinaX2, MinaY2),
   isValidFirstPlay(MinaX2, MinaY2, ValidMinaX, ValidMinaY, YukiX, YukiY, Board).

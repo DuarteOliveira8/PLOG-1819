@@ -3,14 +3,14 @@ game_over(Player, _Board, Winner, ValidPlays) :-
   Winner = Player.
 
 game_over(Player, Board, Winner, _ValidPlays) :-
-  value(Board, Value),
+  checkTotal(Board, Value),
   Value == 93,
   Winner = Player.
 
 checkValidPlays(ValidPlays) :-
   length(ValidPlays, 0).
 
-value(Board, Value) :-
+checkTotal(Board, Value) :-
   sumMultList(0, Value, Board).
 
 valid_moves(Board, 'Yuki', ValidPlays) :-
@@ -27,10 +27,10 @@ checkValidYukiPlay(X, Y, Board) :-
   DY is abs(Y-YukiY),
   between(0, 1, DX),
   between(0, 1, DY),
-  \+ checkValueMultList(1, X, Y, Board),
-  \+ checkValueMultList(2, X, Y, Board),
-  \+ checkValueMultList(5, X, Y, Board),
-  \+ checkValueMultList(0, X, Y, Board),
+  \+ value(1, X, Y, Board),
+  \+ value(2, X, Y, Board),
+  \+ value(5, X, Y, Board),
+  \+ value(0, X, Y, Board),
   getMinaPosition(MinaX, MinaY, Board),
   isVisible(MinaX, MinaY, X, Y, Board).
 
@@ -42,9 +42,9 @@ checkValidMinaPlay(X, Y, Board) :-
   DX is abs(X-MinaX),
   DY is abs(Y-MinaY),
   isOrtogonalOrDiagonal(DX, DY),
-  \+ checkValueMultList(1, X, Y, Board),
-  \+ checkValueMultList(2, X, Y, Board),
-  \+ checkValueMultList(5, X, Y, Board),
+  \+ value(1, X, Y, Board),
+  \+ value(2, X, Y, Board),
+  \+ value(5, X, Y, Board),
   getYukiPosition(YukiX, YukiY, Board),
   \+ isVisible(X, Y, YukiX, YukiY, Board).
 
@@ -126,7 +126,7 @@ isDirectlyVisible(GCD, DX, DY, RXY, RYX, MinaX, MinaY, YukiX, YukiY, Board) :-
   CRXY is ceiling(abs(RXY))*integer(sign(RXY)),
   CRYX is ceiling(abs(RYX))*integer(sign(RYX)),
   calcNextMinaCoords(DX, DY, MinaX, MinaY, CRXY, CRYX, NewMinaX, NewMinaY),
-  checkValueMultList(Value, NewMinaX, NewMinaY, Board),
+  value(Value, NewMinaX, NewMinaY, Board),
   isUndirectlyVisible(Value, NewMinaX, NewMinaY, YukiX, YukiY, Board).
 
 isUndirectlyVisible(3, _NewMinaX, _NewMinaY, _YukiX, _YukiY, _Board) :-
