@@ -1,4 +1,4 @@
-/* Main menu predicate. */
+/* Main menu predicate */
 menu :-
   write('\33\[2J'),
   displayMenu,
@@ -6,7 +6,7 @@ menu :-
   nl,
   manageOptions(Option).
 
-/* Main Menu display predicate. */
+/* Main Menu display predicate */
 displayMenu :-
   nl,
   write('     ______                        ______                  _   \n'),
@@ -39,32 +39,32 @@ displayMenu :-
   sleep(0.1),
   write('Choose wisely the mode you would like to play: ').
 
-/* Starts player vs player mode. */
+/* Starts player vs player mode */
 manageOptions(1) :-
   write('\33\[2J'),
   write('You two have fun!\n'),
   initializeSet('p', 'p', _),
   menu.
 
-/* Starts player vs computer mode. */
+/* Starts player vs computer mode */
 manageOptions(2) :-
   write('\33\[2J'),
   chooseFirstPlayer,
   menu.
 
-/* Starts computer vs computer mode. */
+/* Starts computer vs computer mode */
 manageOptions(3) :-
   write('\33\[2J'),
   write('This is going to be interesting.\n'),
   chooseDifficulty('c', 'c'),
   menu.
 
-/* Exits program. */
+/* Exits program */
 manageOptions(4) :-
   write('\33\[2J'),
   write('KBye.\n').
 
-/* Handle non-number menu options that were inserted. */
+/* Handle non-number menu options that were inserted */
 manageOptions(OTHER) :-
   \+ number(OTHER),
   write('I don\'t know what you just said but try again: '),
@@ -72,7 +72,7 @@ manageOptions(OTHER) :-
   nl,
   manageOptions(Option).
 
-/* Handle invalid numbers inserted in menu option. */
+/* Handle invalid numbers inserted in menu option*/
 manageOptions(OTHER) :-
   OTHER =\= 1,
   OTHER =\= 2,
@@ -83,7 +83,7 @@ manageOptions(OTHER) :-
   nl,
   manageOptions(Option).
 
-/* Chooses the first player to play. */
+/* Chooses the first player to play */
 chooseFirstPlayer :-
   write('Who plays first?\n'),
   write('1) Player.\n'),
@@ -91,19 +91,19 @@ chooseFirstPlayer :-
   read(FirstPlayer),
   manageFirstPlayerOption(FirstPlayer).
 
-/* Sets first player as human player. */
+/* Sets first player as human player */
 manageFirstPlayerOption(1) :-
   write('\33\[2J'),
   write('Good luck...\n'),
   chooseDifficulty('p', 'c').
 
-/* Sets first player as computer. */
+/* Sets first player as computer */
 manageFirstPlayerOption(2) :-
   write('\33\[2J'),
   write('Good luck...\n'),
   chooseDifficulty('c', 'p').
 
-/* Invalid input on choosing first player. */
+/* Invalid input on choosing first player */
 manageFirstPlayerOption(OTHER) :-
   OTHER =\= 1,
   OTHER =\= 2,
@@ -112,7 +112,7 @@ manageFirstPlayerOption(OTHER) :-
   nl,
   manageFirstPlayerOption(FirstPlayer).
 
-/* Displays the choose difficulty menu. */
+/* Displays the choose difficulty menu */
 chooseDifficulty(Type1, Type2) :-
   write('Choose the computer\'s mode:\n'),
   write('1) Easy: He will try to go easy on you.\n'),
@@ -121,15 +121,15 @@ chooseDifficulty(Type1, Type2) :-
   nl,
   manageDifficultyOption(Type1, Type2, Difficulty).
 
-/* Easy Difficulty chosen. */
+/* Easy Difficulty chosen */
 manageDifficultyOption(Type1, Type2, 1) :-
   initializeSet(Type1, Type2, 1).
 
-/* Hard Difficulty chosen. */
+/* Hard Difficulty chosen */
 manageDifficultyOption(Type1, Type2, 2) :-
   initializeSet(Type1, Type2, 2).
 
-/* Invalid difficulty option. */
+/* Invalid difficulty option */
 manageDifficultyOption(Type1, Type2, OTHER) :-
   OTHER =\= 1,
   OTHER =\= 2,
