@@ -104,6 +104,7 @@ calcDistance(V1, X2, Y2, D) :-
   X2Y2 is XP2+YP2,
   D is sqrt(X2Y2).
 
+/* Gets all indexes of element X from given list */
 getIndexesOf(_X, _Index, [], []).
 
 getIndexesOf(X, Index, [L1 | L], Indexes) :-
