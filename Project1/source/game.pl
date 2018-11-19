@@ -200,7 +200,7 @@ initializeGame('c', 'c', Difficulty, Winner, FinalBoard) :-
   write('\33\[2J'),
   gameCycle('Yuki', 'c', 3, Difficulty, MinaBoard, Winner, FinalBoard).
 
-/* Game Cycle predicate */
+/* Game Cycle predicate if game is not over */
 gameCycle(Player, Type, Mode, Difficulty, Board, Winner, FinalBoard) :-
   valid_moves(Board, Player, ValidPlays),
   getOppositePlayer(Player, NextPlayer),
@@ -209,7 +209,7 @@ gameCycle(Player, Type, Mode, Difficulty, Board, Winner, FinalBoard) :-
   getNextType(Type, Mode, NewType),
   gameCycle(NextPlayer, NewType, Mode, Difficulty, MinaBoard, Winner, FinalBoard).
 
-/* Game Cycle predicate */
+/* Game Cycle predicate if game is over */
 gameCycle(Player, _Type, _Mode, _Difficulty, Board, Winner, FinalBoard) :-
   valid_moves(Board, Player, ValidPlays),
   getOppositePlayer(Player, NextPlayer),
@@ -283,9 +283,11 @@ move('Mina', 'c', X, Y, _ValidPlays, Board, NewBoard) :-
   removePlayerPosition(2, MinaX, MinaY, Board, NoMinaBoard),
   addPlayerPosition(2, X, Y, NoMinaBoard, NewBoard).
 
+/* Modify board to remove tree from given position */
 eatTree(X, Y, Board, NBoard) :-
   addToMultListCell(-3, X, Y, Board, NBoard).
 
+/* Asks for the move target coordinates */
 inputPosition(ValidX, ValidY) :-
   write('Type X coordinate: '),
   read(X),
@@ -295,6 +297,7 @@ inputPosition(ValidX, ValidY) :-
   nl,
   validPosition(X, Y, ValidX, ValidY).
 
+/* Valid X and Y coordinates */
 validPosition(X, Y, ValidX, ValidY) :-
   number(X),
   number(Y),
@@ -303,51 +306,60 @@ validPosition(X, Y, ValidX, ValidY) :-
   ValidX is X,
   ValidY is Y.
 
+/* X is out of board bounds */
 validPosition(X, _Y, ValidX, ValidY) :-
   number(X),
   \+ between(1, 10, X),
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
+/* Y is out of board bounds */
 validPosition(_X, Y, ValidX, ValidY) :-
   number(Y),
   \+ between(1, 10, Y),
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
+/* X is not a number */
 validPosition(X, _Y, ValidX, ValidY) :-
   \+ number(X),
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
+/* Y is not a number */
 validPosition(_X, Y, ValidX, ValidY) :-
   \+ number(Y),
   write('Not a valid coordinate! Try again:\n'),
   inputPosition(ValidX, ValidY).
 
+/* Player input is in the valid plays list */
 checkValidPlayerInput([NewX, NewY], ValidX, ValidY, ValidPlays) :-
   member([NewX, NewY], ValidPlays),
   ValidX is NewX,
   ValidY is NewY.
 
+/* Player input is not on the valid plays list */
 checkValidPlayerInput([NewX, NewY], ValidX, ValidY, ValidPlays) :-
   \+ member([NewX, NewY], ValidPlays),
   write('Invalid move!\n'),
   inputPosition(NewX2, NewY2),
   checkValidPlayerInput([NewX2, NewY2], ValidX, ValidY, ValidPlays).
 
+/* First Mina play is valid because it is not visible to Yuki and Yuki is not on that position */
 isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
   \+ isVisible(MinaX, MinaY, YukiX, YukiY, Board),
   \+ value(1, MinaX, MinaY, Board),
   ValidMinaX is MinaX,
   ValidMinaY is MinaY.
 
+/* First Mina play is invalid because Mina is visible to Yuki in that position */
 isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
   isVisible(MinaX, MinaY, YukiX, YukiY, Board),
   write('Invalid first coordinates! Try again:\n'),
   inputPosition(MinaX2, MinaY2),
   isValidFirstPlay(MinaX2, MinaY2, ValidMinaX, ValidMinaY, YukiX, YukiY, Board).
 
+/* First Mina play is invalid because Yuki is on that position */
 isValidFirstPlay(MinaX, MinaY, ValidMinaX, ValidMinaY, YukiX, YukiY, Board) :-
   value(1, MinaX, MinaY, Board),
   write('Invalid first coordinates! Try again:\n'),
