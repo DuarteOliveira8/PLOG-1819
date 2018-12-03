@@ -39,12 +39,12 @@ replaceMultList(Value, X, Y, [B1 | B], [B1 | NB]) :-
 
 /* Check if element exists in a list */
 checkValueList(Value, X, List) :-
-  nth1(X, List, Value).
+  nth0(X, List, Value).
 
 /* Verifies if determined value is on determined position */
 value(Value, X, Y, Board) :-
-  nth1(Y, Board, SubList),
-  nth1(X, SubList, Value).
+  nth0(Y, Board, SubList),
+  nth0(X, SubList, Value).
 
 /* Add all elements of list */
 sumMultList(Sum, Sum, []).
@@ -53,18 +53,6 @@ sumMultList(Sum, Total, [B1 | B]) :-
   NewSum is Sum+TotalList,
   sumMultList(NewSum, Total, B).
 
-/* Get Yuki position */
-getYukiPosition(YukiX, YukiY, Board) :-
-  value(1, YukiX, YukiY, Board).
-
-/* Get Mina (on empty spot) position */
-getMinaPosition(MinaX, MinaY, Board) :-
-  value(2, MinaX, MinaY, Board).
-
-/* Get Mina (on tree) position */
-getMinaPosition(MinaX, MinaY, Board) :-
-  value(5, MinaX, MinaY, Board).
-
 /* Removes player from the board */
 removePlayerPosition(Player, X, Y, Board, NBoard) :-
   addToMultListCell(-Player, X, Y, Board, NBoard).
@@ -72,37 +60,6 @@ removePlayerPosition(Player, X, Y, Board, NBoard) :-
 /* Adds player to the board */
 addPlayerPosition(Player, X, Y, Board, NBoard) :-
   addToMultListCell(Player, X, Y, Board, NBoard).
-
-/* Remove both Mina (on empty spot) and Yuki from the board */
-removePlayersBoard(Board, NewBoard) :-
-  value(1, YukiX, YukiY, Board),
-  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  value(2, MinaX, MinaY, NoYukiBoard),
-  removePlayerPosition(2, MinaX, MinaY, NoYukiBoard, NewBoard).
-
-/* Remove both Mina (on tree) and Yuki from the board */
-removePlayersBoard(Board, NewBoard) :-
-  value(1, YukiX, YukiY, Board),
-  removePlayerPosition(1, YukiX, YukiY, Board, NoYukiBoard),
-  value(5, MinaX, MinaY, NoYukiBoard),
-  removePlayerPosition(5, MinaX, MinaY, NoYukiBoard, NewBoard).
-
-/* Calculates the distances between points V to the point [X, Y] */
-calcDistances([], _X, _Y, []).
-
-calcDistances([V1 | V], X, Y, [D1 | D]) :-
-  calcDistance(V1, X, Y, D1),
-  calcDistances(V, X, Y, D).
-
-calcDistance(V1, X2, Y2, D) :-
-  checkValueList(X1, 1, V1),
-  checkValueList(Y1, 2, V1),
-  X is X2-X1,
-  Y is Y2-Y1,
-  XP2 is X**2,
-  YP2 is exp(Y,2),
-  X2Y2 is XP2+YP2,
-  D is sqrt(X2Y2).
 
 /* Gets all indexes of element X from given list */
 getIndexesOf(_X, _Index, [], []).
@@ -117,13 +74,3 @@ getIndexesOf(X, Index, [L1 | L], [I1 | I]) :-
   I1 is Index,
   NewIndex is Index+1,
   getIndexesOf(X, NewIndex, L, I).
-
-/* Gets opposite player */
-getOppositePlayer('Mina', 'Yuki').
-getOppositePlayer('Yuki', 'Mina').
-
-/* Gets next type (player or computer) */
-getNextType('p', 1, 'p').
-getNextType('p', 2, 'c').
-getNextType('c', 2, 'p').
-getNextType('c', 3, 'c').
