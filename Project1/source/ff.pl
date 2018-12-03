@@ -3,7 +3,7 @@
 :- consult('game.pl').
 :- consult('logic.pl').
 :- consult('ai.pl').
-:- consult('aux.pl').
+:- consult('auxiliar.pl').
 :- use_module(library(system)).
 :- use_module(library(lists)).
 :- use_module(library(between)).
