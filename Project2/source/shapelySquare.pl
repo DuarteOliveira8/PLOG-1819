@@ -70,13 +70,11 @@ setRestriction(Board, Result, ' ', ResultElem, I, J, N).
 
 setRestriction(Board, Result, 's', ResultElem, I, J, N).
 
-setRestriction(Board, Result, 'q', ResultElem, I, J, N) :-
-  ResultElem in {0, 5}.
+setRestriction(Board, Result, 'q', ResultElem, I, J, N).
 
 setRestriction(Board, Result, 'd', ResultElem, I, J, N).
 
-setRestriction(Board, Result, 't', ResultElem, I, J, N) :-
-
+setRestriction(Board, Result, 't', ResultElem, I, J, N).
 
 setRestriction(Board, Result, 'c', ResultElem, I, J, N).
 
