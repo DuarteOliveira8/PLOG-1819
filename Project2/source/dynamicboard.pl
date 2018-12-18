@@ -1,12 +1,15 @@
+:-use_module(library(random)).
+:-use_module(library(lists)).
+
 dynamic_board :-
-  random(4, Upper, Value)
-  display_board(Value).
+  random(4, 20, Value),
+  write(Value),
+  generate_board(Value, Board),
+  write(Board).
 
-display_board(Value) :-
-  N is Value-1,
-  length(N, List),
-  draw_line(List, N),
+generate_board(Value, Board) :-
+  generate_list(Value, Board),
+  maplist(generate_list(Value), Board).
 
-
-fill_line([L1 | L], N) :-
-  random().
+generate_list(Value, List) :-
+  length(List, Value).
