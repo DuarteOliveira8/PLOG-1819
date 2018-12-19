@@ -1,13 +1,12 @@
 :- use_module(library(system)).
 :- use_module(library(lists)).
 :- use_module(library(clpfd)).
-:- use_module(library(chr)).
 :- consult('auxiliar.pl').
 
 /**
  * Main predicate of the application.
  */
-ss(Result) :-
+ss :-
   Board = [['q','k',' ','d','q','c',' ',23],
            ['q','q','t','c','q','q',' ',20],
            ['c',' ','t','d','k','q','t',26],
@@ -24,7 +23,11 @@ ss(Result) :-
             [G1,G2,G3,G4,G5,G6,G7]],
   setDomain(Result),
   setRestrictionsBoard(Board, Result, 0, 0, 7),
-  labelResult(Result).
+  appendBoard(Result, [], Final),
+  labeling([], Final),
+  write(Final),nl,
+  fail.
+ss.
 
 /**
  * Predicates to set the domain to the result board.
@@ -38,11 +41,11 @@ setDomain([R1 | R]) :-
 /**
  * Predicates to label the result board.
  */
-labelResult([]).
+appendBoard([], Final, Final).
 
-labelResult([R1 | R]) :-
-  labeling([], R1),
-  labelResult(R).
+appendBoard([R1 | R], Temp, Final) :-
+  append(Temp, R1, NewTemp),
+  appendBoard(R, NewTemp, Final).
 
 /**
  * Predicates to set all restrictions to the result board.
@@ -54,7 +57,7 @@ setRestrictionsBoard(Board, Result, N, J, N) :-
   setRestrictionsBoard(Board, Result, 0, NewJ, N).
 
 setRestrictionsBoard(Board, Result, I, J, N) :-
-  value(BoardList, I, J, Board)
+  value(BoardList, I, J, Board),
   nth0(J, Board, BoardList),
   nth0(I, BoardList, BoardElem),
   nth0(J, Result, ResultList),
@@ -64,20 +67,46 @@ setRestrictionsBoard(Board, Result, I, J, N) :-
   setRestrictionsBoard(Board, Result, NewI, J, N).
 
 /**
- * Predicates to set restriction to a element of the result board.
+ * Predicate to set restriction to a free space element.
  */
 setRestriction(Board, Result, ' ', ResultElem, I, J, N).
 
-setRestriction(Board, Result, 's', ResultElem, I, J, N).
+/**
+ * Predicate to set restriction to a star element.
+ */
+setRestriction(Board, Result, 's', ResultElem, I, J, N) :-
+  restrictPrime(ResultElem),
+  isNotPrime(Result, I+1, J),
+  isNotPrime(Result, I-1, J),
+  isNotPrime(Result, I, J+1),
+  isNotPrime(Result, I, J-1).
 
+/**
+ * Predicate to set restriction to a quad element.
+ */
 setRestriction(Board, Result, 'q', ResultElem, I, J, N).
 
+/**
+ * Predicate to set restriction to a diamond element.
+ */
 setRestriction(Board, Result, 'd', ResultElem, I, J, N).
 
+/**
+ * Predicate to set restriction to a triangle element.
+ */
 setRestriction(Board, Result, 't', ResultElem, I, J, N).
 
+/**
+ * Predicate to set restriction to a circle element.
+ */
 setRestriction(Board, Result, 'c', ResultElem, I, J, N).
 
+/**
+ * Predicate to set restriction to a knight (chess) element.
+ */
 setRestriction(Board, Result, 'k', ResultElem, I, J, N).
 
+/**
+ * Predicate to set restriction to a heart element.
+ */
 setRestriction(Board, Result, 'h', ResultElem, I, J, N).
