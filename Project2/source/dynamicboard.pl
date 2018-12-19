@@ -1,6 +1,3 @@
-:-use_module(library(random)).
-:-use_module(library(lists)).
-
 dynamic_board :-
   random(4, 30, Value),
   write(Value),
