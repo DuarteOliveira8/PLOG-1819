@@ -21,7 +21,7 @@ restrictPrime(Number) :-
   Number #= 2 #\/ Number #= 3 #\/ Number #= 5 #\/ Number #= 7.
 
 /**
- * Restricts number to be prime.
+ * Restricts number not to be prime or 1.
  */
 restrictNotPrimeOrOne(Number) :-
   Number #= 4 #\/ Number #= 6 #\/ Number #= 8 #\/ Number #= 9.
