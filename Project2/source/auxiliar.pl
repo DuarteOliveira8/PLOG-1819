@@ -40,6 +40,102 @@ getElementRelative(Board, I, J, [Elem]) :-
 getElementRelative(_Board, _I, _J, []).
 
 /**
+ * Gets all orthogonally neighbours.
+ */
+getOrthogonals(Board, Result, I, J, BoardElems, ResultElems) :-
+  getElementRelative(Result, I-1, J, LeftElemResult),
+  getElementRelative(Board, I-1, J, LeftElemBoard),
+  append([], LeftElemResult, List1Result),
+  append([], LeftElemBoard, List1Board),
+
+  getElementRelative(Result, I+1, J, RightElemResult),
+  getElementRelative(Board, I+1, J, RightElemBoard),
+  append(List1Result, RightElemResult, List2Result),
+  append(List1Board, RightElemBoard, List2Board),
+
+  getElementRelative(Result, I, J-1, UpElemResult),
+  getElementRelative(Board, I, J-1, UpElemBoard),
+  append(List2Result, UpElemResult, List3Result),
+  append(List2Board, UpElemBoard, List3Board),
+
+  getElementRelative(Result, I, J+1, DownElemResult),
+  getElementRelative(Board, I, J+1, DownElemBoard),
+  append(List3Result, DownElemResult, ResultElems),
+  append(List3Board, DownElemBoard, BoardElems).
+
+/**
+ * Gets all grid range elements.
+ */
+getGridRange(Board, Result, I, J, BoardElems, ResultElems) :-
+  getElementRelative(Result, I-1, J-1, TopLeftElemResult),
+  getElementRelative(Board, I-1, J-1, TopLeftElemBoard),
+  append([], TopLeftElemResult, List1Result),
+  append([], TopLeftElemBoard, List1Board),
+
+  getElementRelative(Result, I, J-1, TopElemResult),
+  getElementRelative(Board, I, J-1, TopElemBoard),
+  append(List1Result, TopElemResult, List2Result),
+  append(List1Board, TopElemBoard, List2Board),
+
+  getElementRelative(Result, I+1, J-1, TopRightElemResult),
+  getElementRelative(Board, I+1, J-1, TopRightElemBoard),
+  append(List2Result, TopRightElemResult, List3Result),
+  append(List2Board, TopRightElemBoard, List3Board),
+
+  getElementRelative(Result, I-1, J, LeftElemResult),
+  getElementRelative(Board, I-1, J, LeftElemBoard),
+  append(List3Result, LeftElemResult, List4Result),
+  append(List3Board, LeftElemBoard, List4Board),
+
+  getElementRelative(Result, I+1, J, RightElemResult),
+  getElementRelative(Board, I+1, J, RightElemBoard),
+  append(List4Result, RightElemResult, List5Result),
+  append(List4Board, RightElemBoard, List5Board),
+
+  getElementRelative(Result, I-1, J+1, BotLeftElemResult),
+  getElementRelative(Board, I-1, J+1, BotLeftElemBoard),
+  append(List5Result, BotLeftElemResult, List6Result),
+  append(List5Board, BotLeftElemBoard, List6Board),
+
+  getElementRelative(Result, I, J+1, BotElemResult),
+  getElementRelative(Board, I, J+1, BotElemBoard),
+  append(List6Result, BotElemResult, List7Result),
+  append(List6Board, BotElemBoard, List7Board),
+
+  getElementRelative(Result, I+1, J+1, BotRightElemResult),
+  getElementRelative(Board, I+1, J+1, BotRightElemBoard),
+  append(List7Result, BotRightElemResult, ResultElems),
+  append(List7Board, BotRightElemBoard, BoardElems).
+
+/**
+ * Gets elements in chess knight attack range.
+ */
+getGridRange(Result, I, J, ResultElems) :-
+  getElementRelative(Result, I-2, J-1, TLHResult),
+  append([], TLHResult, List1Result),
+
+  getElementRelative(Result, I-1, J-2, TLVResult),
+  append(List1Result, TLVResult, List2Result),
+
+  getElementRelative(Result, I+2, J-1, TRHResult),
+  append(List2Result, TRHResult, List3Result),
+
+  getElementRelative(Result, I+1, J-2, TRVResult),
+  append(List3Result, TRVResult, List4Result),
+
+  getElementRelative(Result, I-2, J+1, BLHResult),
+  append(List4Result, BLHResult, List5Result),
+
+  getElementRelative(Result, I-1, J+2, BLVResult),
+  append(List5Result, BLVResult, List6Result),
+
+  getElementRelative(Result, I+2, J+1, BRHResult),
+  append(List6Result, BRHResult, List7Result),
+
+  getElementRelative(Result, I+1, J+2, BRVResult),
+  append(List7Result, BRVResult, ResultElems).
+
+/**
  * Restricts Elements around to be different than the element in question. If the element is a diamond, no restrictions is added.
  */
 restrictDifferentExceptDiamond([], [], _ResultElem).
@@ -109,5 +205,5 @@ getLeftElements(Result, I, J, Temp, Final) :-
 getElementsParity([], Final, Final).
 
 getElementsParity([L1 | L], Temp, Final) :-
-  (L1 #= 0 #\/ L1 #= 2 #\/ L1 #= 4 #\/ L1 #= 6 #\/ L1 #= 8) #=> B,
+  (L1 #= 0 #\/ L1 #= 2 #\/ L1 #= 4 #\/ L1 #= 6 #\/ L1 #= 8) #<=> B,
   getElementsParity(L, [B | Temp], Final).
