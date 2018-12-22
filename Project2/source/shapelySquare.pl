@@ -25,10 +25,17 @@ ss :-
             [E1,E2,E3,E4,E5,E6,E7],
             [F1,F2,F3,F4,F5,F6,F7],
             [G1,G2,G3,G4,G5,G6,G7]],
+  % Board = [['c', ' ', 't'],
+  %          [' ', 's', 'q'],
+  %          ['t', ' ', 't']],
+  % Result = [[A1, A2, A3],
+  %           [B1, B2, B3],
+  %           [C1, C2, C3]],
   setDomain(Result),
   setRestrictionsBoard(Board, LineSums, Result, 0, 0, 7),
+  calcSums(Result, LineSums),
   appendBoard(Result, [], Final),
   labeling([], Final),
-  write(Final),nl,
+  display_board(Final, 7),nl,
   fail.
 ss.
