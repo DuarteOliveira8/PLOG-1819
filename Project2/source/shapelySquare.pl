@@ -14,7 +14,7 @@ ss(Mode) :-
   repeat,
     dynamicBoard(Mode, Board, Result, LineSums, N),
     setDomain(Result),
-    setRestrictionsBoard(Board, LineSums, Result, 0, 0, N),
+    setRestrictionsBoard(Board, Result, 0, 0, N),
     setCircleRestrictions(Board, Result),
     calcSums(Result, LineSums),
     appendBoard(Result, [], FinalResult),
