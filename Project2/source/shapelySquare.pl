@@ -24,4 +24,4 @@ ss(Mode) :-
   appendBoard(Board, [], FinalBoard),
   displayBoard(FinalBoard, N),
   write(LineSums), nl,
-  display_board(FinalResult, N),nl.
+  displayBoard(FinalResult, N),nl.

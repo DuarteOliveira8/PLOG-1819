@@ -75,6 +75,17 @@ dynamicBoard(3, Board, Result, LineSums, 7) :-
             [_F1,_F2,_F3,_F4,_F5,_F6,_F7],
             [_G1,_G2,_G3,_G4,_G5,_G6,_G7]].
 
+dynamicBoard(4, Board, Result, LineSums, 4) :-
+  Board = [['s','c','d','q'],
+           [' ','d','q','c'],
+           ['q',' ','c','d'],
+           ['q','c','s',' ']],
+  LineSums = [19,22,14,23],
+  Result = [[_A1,_A2,_A3,_A4],
+            [_B1,_B2,_B3,_B4],
+            [_C1,_C2,_C3,_C4],
+            [_D1,_D2,_D3,_D4]].
+
 /**
  * Generates a board (NxN) with a specified length N.
  */
@@ -124,7 +135,7 @@ generateLineSums(N, [LS1 | LS]) :-
 displayBoard([L1 | L], N) :-
   write('-'),
   writeUnderline(N),
-  display_board([L1 | L], 0, 0, N).
+  displayBoard([L1 | L], 0, 0, N).
 
 displayBoard(_, _, N, N).
 
@@ -135,7 +146,7 @@ displayBoard(List, N, J, N) :-
   nl,
   write('-'),
   writeUnderline(N),
-  display_board(List, 0, NewJ, N), !.
+  displayBoard(List, 0, NewJ, N), !.
 
 displayBoard([L1 | L], I, J, N) :-
   I < N,
@@ -143,7 +154,7 @@ displayBoard([L1 | L], I, J, N) :-
   write(L1),
   write(' '),
   NewI is I+1,
-  display_board(L, NewI, J, N), !.
+  displayBoard(L, NewI, J, N), !.
 
 /**
  * Draws an underline according to the width of the board.
