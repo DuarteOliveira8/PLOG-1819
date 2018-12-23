@@ -10,14 +10,18 @@
 /**
  * Main predicate of the application.
  */
-ss :-
-  testBoard(3, Board, Result, LineSums),
-  setDomain(Result),
-  setRestrictionsBoard(Board, LineSums, Result, 0, 0, 7),
-  setCircleRestrictions(Board, Result),
-  calcSums(Result, LineSums),
-  appendBoard(Result, [], Final),
-  labeling([], Final),
-  display_board(Final, 7),nl,
-  fail.
-ss.
+ss(Mode) :-
+  repeat,
+    dynamicBoard(Mode, Board, Result, LineSums, N),
+    setDomain(Result),
+    setRestrictionsBoard(Board, LineSums, Result, 0, 0, N),
+    setCircleRestrictions(Board, Result),
+    calcSums(Result, LineSums),
+    appendBoard(Result, [], FinalResult),
+    labeling([], FinalResult),
+  !,
+  write(N), nl,
+  appendBoard(Board, [], FinalBoard),
+  displayBoard(FinalBoard, N),
+  write(LineSums), nl,
+  display_board(FinalResult, N),nl.
