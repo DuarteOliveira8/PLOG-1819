@@ -12,7 +12,7 @@ appendBoard([], Final, Final).
 
 appendBoard([R1 | R], Temp, Final) :-
   append(Temp, R1, NewTemp),
-  appendBoard(R, NewTemp, Final).
+  appendBoard(R, NewTemp, Final), !.
 
 /**
  * Restricts number to be prime.
@@ -27,7 +27,7 @@ restrictNotPrimeOrOne([]).
 
 restrictNotPrimeOrOne([N1 | N]) :-
   N1 #= 0 #\/ N1 #= 4 #\/ N1 #= 6 #\/ N1 #= 8 #\/ N1 #= 9,
-  restrictNotPrimeOrOne(N).
+  restrictNotPrimeOrOne(N), !.
 
 /**
  * Gets a neighbour element.
@@ -110,7 +110,7 @@ getGridRange(Board, Result, I, J, BoardElems, ResultElems) :-
 /**
  * Gets elements in chess knight attack range.
  */
-getGridRange(Result, I, J, ResultElems) :-
+getKnightRange(Result, I, J, ResultElems) :-
   getElementRelative(Result, I-2, J-1, TLHResult),
   append([], TLHResult, List1Result),
 
@@ -141,11 +141,11 @@ getGridRange(Result, I, J, ResultElems) :-
 restrictDifferentExceptDiamond([], [], _ResultElem).
 
 restrictDifferentExceptDiamond([_R1 | R], ['d' | B], ResultElem) :-
-  restrictDifferentExceptDiamond(R, B, ResultElem).
+  restrictDifferentExceptDiamond(R, B, ResultElem), !.
 
 restrictDifferentExceptDiamond([R1 | R], [_B1 | B], ResultElem) :-
   ResultElem #\= R1,
-  restrictDifferentExceptDiamond(R, B, ResultElem).
+  restrictDifferentExceptDiamond(R, B, ResultElem), !.
 
 /**
  * Restricts Circles around to be equal to the element in question.
@@ -154,10 +154,10 @@ restrictEqualCircles([], [], _ResultElem).
 
 restrictEqualCircles([R1 | R], ['c' | B], ResultElem) :-
   ResultElem #= R1,
-  restrictEqualCircles(R, B, ResultElem).
+  restrictEqualCircles(R, B, ResultElem), !.
 
 restrictEqualCircles([_R1 | R], [_B1 | B], ResultElem) :-
-  restrictEqualCircles(R, B, ResultElem).
+  restrictEqualCircles(R, B, ResultElem), !.
 
 /**
  * Get neighboring hearts around heart.
@@ -165,10 +165,10 @@ restrictEqualCircles([_R1 | R], [_B1 | B], ResultElem) :-
 getNeighboringHearts([], [], Final, Final).
 
 getNeighboringHearts([R1 | R], ['h' | B], Temp, Final) :-
-  getNeighboringHearts(R, B, [R1 | Temp], Final).
+  getNeighboringHearts(R, B, [R1 | Temp], Final), !.
 
 getNeighboringHearts([_R1 | R], [_B1 | B], Temp, Final) :-
-  getNeighboringHearts(R, B, Temp, Final).
+  getNeighboringHearts(R, B, Temp, Final), !.
 
 /**
  * Restricts element to be odd.
@@ -186,7 +186,7 @@ restrictEven(Number) :-
  * Restricts elements not to be a multiple of 3.
  */
 restrictNotMultiple3(Number) :-
-  Number #\= 3 #/\ Number #\= 6 #/\ Number #\= 9.
+  Number #\= 0 #/\ Number #\= 3 #/\ Number #\= 6 #/\ Number #\= 9.
 
 /**
  * Gets all elemnts to the left of its position.
@@ -197,7 +197,7 @@ getLeftElements(Result, I, J, Temp, Final) :-
   I >= 0,
   getElement(Elem, I, J, Result),
   NewI is I-1,
-  getLeftElements(Result, NewI, J, [Elem | Temp], Final).
+  getLeftElements(Result, NewI, J, [Elem | Temp], Final), !.
 
 /**
  * Gets all elements parity
@@ -206,4 +206,32 @@ getElementsParity([], Final, Final).
 
 getElementsParity([L1 | L], Temp, Final) :-
   (L1 #= 0 #\/ L1 #= 2 #\/ L1 #= 4 #\/ L1 #= 6 #\/ L1 #= 8) #<=> B,
-  getElementsParity(L, [B | Temp], Final).
+  getElementsParity(L, [B | Temp], Final), !.
+
+/**
+ * Gets al the circles domain varibales in the result board.
+ */
+getAllCirclesBoard([], [], Final, Final).
+
+getAllCirclesBoard([B1 | B], [R1 | R], Temp, Final) :-
+  getAllCirclesLine(B1, R1, [], Circles),
+  append(Temp, Circles, NewTemp),
+  getAllCirclesBoard(B, R, NewTemp, Final), !.
+
+getAllCirclesLine([], [], Final, Final).
+
+getAllCirclesLine(['c' | LB], [LR1 | LR], Temp, Final) :-
+  getAllCirclesLine(LB, LR, [LR1 | Temp], Final), !.
+
+getAllCirclesLine([_LB1 | LB], [_LR1 | LR], Temp, Final) :-
+  getAllCirclesLine(LB, LR, Temp, Final), !.
+
+/**
+ * Restructs all circles to be equal.
+ */
+applyCirclesEqual([_C1]).
+
+applyCirclesEqual([C1 | C]) :-
+  nth0(0, C, C2),
+  C1 #= C2,
+  applyCirclesEqual(C), !.
